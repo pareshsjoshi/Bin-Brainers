@@ -3,6 +3,7 @@ Do Linear singly link list add/remove first/last, print
 Generics
 -Using Object class
 -Using Generics
+![/cda]
 Consider generic class using java.lang.Object class
 ```java
 //code
