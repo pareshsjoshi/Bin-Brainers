@@ -3,7 +3,7 @@ Do Linear singly link list add/remove first/last, print
 Generics
 -Using Object class
 -Using Generics
-![cdac image](pareshsjoshi/Bin-Brainers/CDAC Schedule.jpg)
+![cdac image](CDAC Schedule.jpg)
 Consider generic class using java.lang.Object class
 ```java
 //code
