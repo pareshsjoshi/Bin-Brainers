@@ -1,9 +1,10 @@
 # Bin-Brainers
 Do Linear singly link list add/remove first/last, print
-Generics
--Using Object class
--Using Generics
-![cdac image](CDAC Schedule.jpg)
+Generics 
+## list
+* Using Object class
+* Using Generics
+![cdac image](/CDAC%20Schedule.jpg)
 Consider generic class using java.lang.Object class
 ```java
 //code
