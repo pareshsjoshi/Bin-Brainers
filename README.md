@@ -67,3 +67,4 @@ Type eraser - if integer type is set as type argument type, it will erased autom
 https://docs.oracle.com/javase/tutorial/java/generics/restrictions.html
 Next - 
 frigile base class, interface
+rahul
