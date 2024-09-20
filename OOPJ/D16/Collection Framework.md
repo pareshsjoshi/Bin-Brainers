@@ -36,6 +36,7 @@
 
 # List Interface Methods
 | Return Type | Method | Description |
+|-------------|--------|-------------|
 | void | add (int index, E obj) | Inserts obj at the specified index. |
 | void | addAll (int index, Collection <? extends E> c) | Inserts all elements of c at the specified index. |
 | E | get ( int index ) | Returns element stored at specified index. |
