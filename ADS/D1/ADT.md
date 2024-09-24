@@ -58,5 +58,19 @@ Find factorial using recursive function
 ```java
 //Recursive tree - in attached image
 //Logic - in attached image	
-
+//Infinite loop
+class Recursion{
+        static int fact(int n)
+        {
+                if(n<=1)
+                        return 1;
+                else
+                        return n*fact(n-1);
+        }
+        public static void main(String args[])
+        {
+              System.out.println(fact(5)); //method call
+        }
+}
 ```
+![Logic & Recursive Tree](CDAC/
