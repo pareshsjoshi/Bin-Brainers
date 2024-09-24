@@ -126,9 +126,12 @@
 4. Deletion: Removing an elecment.
 5. Sorting: Arrange element in perticular order.
 6. Merging:  Combining two data DS into one.
-
 -------------------------------------------------
-Difference in Static & Dynamic DS
+![Data Structure](/ADS/D1/Data%20Structure.png)
+- When we implement Stack, Queue, Linked-List using array, we call it Static DS
+- When we implement Stack, Queue, Linked-List using Linked list, we call it Dynamic DS
+-------------------------------------------------
+## Difference in Static & Dynamic DS
 | Static DS | Dynamic DS |
 |-----------|------------|
 | A static DS is a fixed-size structure that allocates a predefined ammount of memory at compile time. | A Dynamic DS can grow or shrink in size during program execution. |
@@ -137,22 +140,4 @@ Difference in Static & Dynamic DS
 | - Code eg. Array | - Code eg. linkedList |
 
 
-H/W diff in Linear & Non-Linear DS.
-	
-	
-	
-	
-						Data Structure
-							
-			Primitive					Not-Primitive
-										-Linear DS
-											Arrays
-											-single
-											-two
-											-multi
-											Linked List
-											
-										-Non-Linear DS
-When we implement Stack, Queue, Linked-List using array, we call it Static DS
-When we implement Stack, Queue, Linked-List using Linked list, we call it Dynamic DS
-Diagram in SS...
+## H/W diff in Linear & Non-Linear DS.
