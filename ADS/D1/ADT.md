@@ -48,8 +48,8 @@ Types of recursion
 		fun1();
 	}
 ```
-*Q.* If your program enters in infinite loop, then what will happen in background? 
-*Ans.* It'll traverse in recursion till allotted memory is used.
+-*Q.* If your program enters in infinite loop, then what will happen in background? 
+- *Ans.* It'll traverse in recursion till allotted memory is used.
 	
 - As recursive tree starts growing function values goes in stack memory, and memory gets free as function comes out of recursive functions.
 	
