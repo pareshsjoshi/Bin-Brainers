@@ -6,9 +6,10 @@
 //D1.2 ADT digram
 - Remember - Whenever we want to optimize the program, make use ADT (Java Collection Framework).
 
-listen starting of recording D1.2 till 3.17
+  - listen starting of recording D1.2 till 3.17
 
-## Recursion: Any function which call itself directly or indirectly is called as recursion. The corresponding function is called recursive function
+## Recursion:
+- Any function which call itself directly or indirectly is called as recursion. The corresponding function is called recursive function
 - Recursive method solves problem by calling copy of itself to work on smaller problem.
 - It is important to ensure that recursion must end.
 - Each time function call itself with slightly simple version of original problem.
@@ -37,7 +38,7 @@ Types of recursion
 	}
 ```
 2. Indirect Recursion
-	A function is called indirect recursive call if it calls another function, which is calling current function it in.
+	- A function is called indirect recursive call if it calls another function, which is calling current function it in.
 ```java
 	//Indirect Recursion
 	void fun1(){
@@ -47,7 +48,7 @@ Types of recursion
 		fun1();
 	}
 	```
-- *Q.* If your program enters in infinite loop, then what will happen in background? 
+- *Q.* If your program enters in infinite loop, then what will happen in background? 
 - *Ans.* It'll traverse in recursion till allotted memory is used.
 	
 - As recursive tree starts growing function values goes in stack memory, and memory gets free as function comes out of recursive functions.
