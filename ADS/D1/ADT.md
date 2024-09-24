@@ -73,4 +73,4 @@ class Recursion{
         }
 }
 ```
-![Logic & Recursive Tree](/ADS/
+![Logic & Recursive Tree](https://github.com/pareshsjoshi/Bin-Brainers/blob/main/ADS%2FD1%2FRecursion%20Logic.png)
