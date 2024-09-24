@@ -27,9 +27,12 @@ public class Test {
 }
 //code
 ```
-Typesafe - It is to ensure object type is used as it supposed to.
-ParameterizedType-
-We pass data type as argument in generic class.
+```java
+![cdac image](/CDAC%20Schedule.jpg)
+```
+- Typesafe - It is to ensure object type is used as it supposed to.
+- ParameterizedType-
+- We pass data type as argument in generic class.
 ```java
 //code
 class Box<T>{
@@ -51,15 +54,24 @@ public class Test {
 //code
 ```
 Why generics-
-Stronger type checking at compile time, jis me pass kiya usi me catch kro.
-Don't required explicit type casting
-we can implement generic data structer & generic algorithms.
-Type argument must be non-primitive and reference type only
-Bounded type parameter - to restrict type parameter for perticular data type(s) only.
-try - 12.8 demo1 getClass for each loop and combine all print method into 1
-In generics "?" is known as wild card, it represents unknown type.
-Wild card ypes- unbounded wild card, upper bounded wild card, lower bounded wild card.
+- Stronger type checking at compile time, jis me pass kiya usi me catch kro.
+- Don't required explicit type casting
+- we can implement generic data structer & generic algorithms.
+- Type argument must be non-primitive and reference type only
+- Bounded type parameter - to restrict type parameter for perticular data type(s) only.
+- try - 12.8 demo1 getClass for each loop and combine all print method into 1
+- In generics "?" is known as wild card, it represents unknown type.
+- Wild card ypes- unbounded wild card, upper bounded wild card, lower bounded wild card.
+```java
 //code 12.8 d3
+<<<<<<< HEAD
+```
+- Upper bounded wild card - ? extends Number - allow itslef and all subclass of number
+- Upper bounded wild card - ? super Integer - allow itslef and all superclasses of integer
+- Which are restriction of generics
+- Type eraser - if integer type is set as type argument type, it will erased automatically for compile purpose and set to Object.
+- https://docs.oracle.com/javase/tutorial/java/generics/restrictions.html
+=======
 Upper bounded wild card - ? extends Number - allow itslef and all subclass of number
 Upper bounded wild card - ? super Integer - allow itslef and all superclasses of integer
 Which are restriction of generics
@@ -67,3 +79,4 @@ Type eraser - if integer type is set as type argument type, it will erased autom
 https://docs.oracle.com/javase/tutorial/java/generics/restrictions.html
 Next - 
 frigile base class, interface
+>>>>>>> 99d20065aa961de35523434f456f9a100b38bd04
