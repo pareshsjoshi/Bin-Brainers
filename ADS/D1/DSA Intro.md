@@ -33,18 +33,18 @@
   - In DS-
     - First see real-time problem, understand rtp follow steps of finding solution for rtp, design steps of algorithm to solve rtp, implement the algorithm in program. We make use of DS while implementing.
 
-Logic building - It is solution of problem, in step by step manure using algorithm, and applying algorithm while implementing DS.
--------------------------------------------------
-Algorithm - 1. it is step-by-step procedure to solve ral-time-problem or to perform any tasks. 2. it is well defined step-by-step computational procedure that takes a set of inputs and produce a desired output.
--------------------------------------------------
-Characteristics for Algorithm: 
+$ Logic building - It is solution of problem, in step by step manure using algorithm, and applying algorithm while implementing DS.
+
+$ Algorithm - 1. it is step-by-step procedure to solve ral-time-problem or to perform any tasks. 2. it is well defined step-by-step computational procedure that takes a set of inputs and produce a desired output.
+
+- Characteristics for Algorithm: 
 	-Finite: must terminate after finite number of steps.
 	-Definate - Each step must be precisely defined.
 	-Input - Takes zero or more inputes (at least 1 input)
 	-Output - Produce at least 1 output.
 	-Effective - Each step must be basic & achievable.
--------------------------------------------------
-Types of algorithm Strategies:
+ 
+- # Types of algorithm Strategies:
 -Greedy technique - 1.Choose best-out-of-best solution. 2. Makes *locally optimal* choice at each step with hope of finding *global optimum*. 3.eg. Dijkstra's Algorithm
 -Divide and Conquer - 1.Break big problems into small tasks/subproblems then solve them *recursively* and *combine* all together. 2. eg. Merge sort, Quick sort
 -Dynamic programming - 1.It is combination of Greedy technique and Divide & Conquer. 2.Solves complex problems by breaking them into simpler subproblems & *solving each once*. 3.eg. Fibonacci, Knapsack problem.
@@ -52,7 +52,7 @@ Types of algorithm Strategies:
 -Recursive Technique - 1. Solves a problem by solving smaller instances of the same program. 2. eg. Tower of Hanoi, Factorial.
 -Search Algorithm - 1. Finds an element in DS. 2. eg. Binary search, Linear search.
 -Sorting Algorithms - Order the elements in perticular sequence. Bubble sort, selection sort, insertion sort, heap sort.
--------------------------------------------------
+
 Algorithm Analysis - with-respect-to time & space.
 1. Time complexity - 
 	- How much time is taken by program to execute.
