@@ -68,7 +68,7 @@ Backtrack(x)
 - Recursion
 - Repeat
 	
-Example -	
+**Example** -	
 ```java
 class BackTracking{
 	
