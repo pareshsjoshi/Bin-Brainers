@@ -30,6 +30,7 @@ Row major order / Column major order
 2. Column major order
     - Address(aij) = M + (j-1)*m+i-1
     - a34 = 100+(4-1)*3+3-1 = 111
+
 ![Row/Column Major Order](/ADS/D2/Head-Tail%20Recursion.png)	
 
 ### Array Operation
