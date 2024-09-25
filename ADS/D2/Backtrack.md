@@ -90,3 +90,4 @@ class BackTracking{
 	}
 }
 ```
+![Backtrack](/ADS/D2/Backtrack.png)
