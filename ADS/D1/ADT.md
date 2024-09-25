@@ -1,9 +1,9 @@
 ## Abstract Data Structure (ADT)
-- ADT is type/class for objects whos behaviour is defined by set of rules.
+- ADT is type/class for objects whos behaviour is define by set of rules.
 - The defination of ADT only mentione swhat operations are to be performed but not how to perform or how to implement
 - It does not specifiy ho data will be organized in memory and what algorithms are used for implementation.
 - It is called as 'abstract' bcz it give an implementation-independant view.
-//D1.2 ADT digram
+![ADT Diagram](/ADS/D1/ADT%20Diagram.png)
 - Remember - Whenever we want to optimize the program, make use ADT (Java Collection Framework).
 
   - listen starting of recording D1.2 till 3.17
@@ -48,7 +48,8 @@ Types of recursion
 		fun1();
 	}
 ```
--*Q.* If your program enters in infinite loop, then what will happen in background? 
+-
+*Q.* If your program enters in infinite loop, then what will happen in background? 
 - *Ans.* It'll traverse in recursion till allotted memory is used.
 	
 - As recursive tree starts growing function values goes in stack memory, and memory gets free as function comes out of recursive functions.
@@ -71,6 +72,7 @@ class Recursion{
         {
               System.out.println(fact(5)); //method call
         }
-}
+}
+
 ```
-![Logic & Recursive Tree](https://github.com/pareshsjoshi/Bin-Brainers/blob/main/ADS%2FD1%2FRecursion%20Logic.png)
+![Logic & Recursive Tree](/ADS/D1/Recursion%20Logic.png)
