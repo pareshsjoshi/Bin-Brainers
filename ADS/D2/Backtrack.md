@@ -24,7 +24,7 @@
 	- Checks and make current decision to a valid solution.
 4. Backtrack & try new option
 	- If no options are valid, then the algorithm backtracks to previous decision points.
-	- 
+	
 5. Completion
 	- Continue till get the solution.
 	
@@ -41,7 +41,7 @@
 	- Nummber or String text
 6. Knapsnack problem
 	- Solving variationof knapsack problem by exploring all possible ways to pack item into knapsack.
-	-
+
 ## H/W - Difference between
 1. Recursion & Backtracking
 2. Static Data Structure & Dynamic Data Structure

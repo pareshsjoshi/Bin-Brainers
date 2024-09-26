@@ -25,13 +25,15 @@ Calculate memory address
 Row major order / Column major order
 (m*n = 3x4)
 1. Row major order
+- If we store elemts row-wise then it is called Row Major Order
     - Address(aij) = M+(i+1)*n+j-1
     - a13 = 100+(1-1)*4+3-1 = 102
 2. Column major order
+- If we store elemts column-wise then it is called Column Major Order
     - Address(aij) = M + (j-1)*m+i-1
     - a34 = 100+(4-1)*3+3-1 = 111
 
-![Row/Column Major Order](/ADS/D2/Head-Tail%20Recursion.png)	
+![Row/Column Major Order](/ADS/D2/Row-Column%20Major%20Oder.png)	
 
 ### Array Operation
 - Insertion

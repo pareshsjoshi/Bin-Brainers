@@ -18,5 +18,7 @@
 	- Recursion heading towards left.
 	- Function in start of the expression.
 	- It is recursive call made before any other operations or calculation in the function. The function performs after the recursion.
-	
-- Explore - Achermann's function
+
+- **Explore - Achermann's function**
+
+![Row/Column Major Order](/ADS/D2/Head-Tail%20Recursion.png)
