@@ -95,7 +95,7 @@ bal		2	50	 0
 10		27
 After 
 ```
-![AVL Visual](https://www.cs.usfca.edu/~galles/visualization/AVLtree.html)
+[AVL Visuals Link](https://www.cs.usfca.edu/~galles/visualization/AVLtree.html)
 
 #### Applications
 - Data bases
@@ -104,3 +104,5 @@ After
 ## Red & Black Tree
 ![Red-Black Tree1](/ADS/D8/Red-black%20tree1.png)
 ![Red-Black Tree2](/ADS/D8/Red-black%20tree2.png)
+
+[AVL Code by ma'am](https://github.com/Kiranwaghmare123/PG-DAC-Aug2024/blob/c1a610133de17879cbf964a73f53bcf8378cb557/Day9/AVLTree.java)
