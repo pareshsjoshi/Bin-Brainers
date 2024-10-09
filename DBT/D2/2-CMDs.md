@@ -164,4 +164,4 @@ sal*12 + sal*12*0.4 + sal*12*0.2 "NET" from emp;
 ```
 - You cannot use alias in an expression
 
-![draw1](/DBT/D2/D2%20draw1.png)
+![draw2](/DBT/D2/D2%20draw2.png)
