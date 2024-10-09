@@ -3,7 +3,7 @@ A graph is non-linear data structure
 - G(V,E)
 - Vertices -> Node-> Entity/Objects
 - Edges -> Connected pairs of vertices
-![Graph1](/ADS/D11/Graph1.png)
+![Graph1](/ADS/D12/Graph1.png)
 
 #### Type of Edges
 1. Undirected Edges
@@ -60,11 +60,14 @@ A graph is non-linear data structure
     - Time complexity - O(1)
     - Space complexity - O(n^2)
     - For Undirected Graph, the matrix is Symmetric.
-![Graph2](/ADS/D11/Graph2.png)
+
+![Graph2](/ADS/D12/Graph2.png)
+
 2. Adjecency List (Screenshot)
     - Time complexity - O(V+E)
     - Space complexity - O(E)
-![Graph3](/ADS/D11/Graph3.png)
+	
+![Graph3](/ADS/D12/Graph3.png)
 
 #### Graph Traversal
 - DFS - Depth first search (Uses Stack)
@@ -184,13 +187,13 @@ Difference in DFS & BFS
 	- Pick edges who have the shortest cost first.
 	- Time complexity = O(ElogE)
 	- Spcae = O(E+V)
-![Graph4](/ADS/D11/Graph4.png)
+![Graph4](/ADS/D12/Graph4.png)
 	
 ##### 2. Prim's Algorithm  (its Greedy Algorithm)
 	- Pick any edge  with low cost edge.
 	- Time complexity = O(ElogV)
 	- Spcae = O(E+V)
-![Graph5](/ADS/D11/Graph5.png)
+![Graph5](/ADS/D12/Graph5.png)
 	
 ##### 3. Dijkstra's Algorithm
 - Used to find shortest path in weighted graph
@@ -198,7 +201,7 @@ Difference in DFS & BFS
 - Method - Greedy Algorithm, which expands node with with smallest distance at each step.
 - Time complexity - O(V^2)
 - Space complexity - O(V)
-![Graph6](/ADS/D11/Graph6.png)
+![Graph6](/ADS/D12/Graph6.png)
 
 ##### Bellman Ford
 - Time complexity - O(V+E)
