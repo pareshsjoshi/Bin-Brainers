@@ -200,19 +200,19 @@ D2.1 SQL
 2. To see which data bases are available
 	- mysql> show databases;
 3. To connect to databases
-	- mysql> use <dbname>;
+	- mysql> use (dbname);
 4. To see which users are created
 	- mysql> select user from user;
 		- user is system table which stores all user information
 5. Create a new user
-	- mysql> create user <username> identified by <password>; @localhost restrics user to access db from local system only.
+	- mysql> create user (username) identified by (password); @localhost restrics user to access db from local system only.
 	create user amit@localhost identified by 'student';
 6. Create database for new user
-	- mysql> create database <dbname>;
+	- mysql> create database (dbname);
 	- or 
-	- mysql>  create schema <schemaname>;
+	- mysql>  create schema (schemaname);
 7. Give all permissions to the new user on the new databse
-	- mysql> grant all privileges on <dbname>.* to <username>;
+	- mysql> grant all privileges on (dbname).* to (username);
 	- grant all privileges on cdacmumai.* to amit@localhost;
 	- flush privileges; -> will apply privileges instantly, else it requires db restart.
 	- exit
