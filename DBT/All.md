@@ -1446,7 +1446,7 @@ order by 2;
 ```sql
 use cdacmumbai
 select database() from dual;
-user() from dual;
+select user() from dual;
 show character set;
 ```
 D5.2 Group/Aggregate functions
