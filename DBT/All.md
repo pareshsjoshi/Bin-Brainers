@@ -1975,3 +1975,1338 @@ order by 1;
 ```
 
 ## D6
+D6.1 Joins
+
+## Joins
+<table>
+<tr>
+<td>
+
+```sql
+select deptno, sum(sal) from emp
+group by deptno;
+```
+</td>
+<td>
+
+```
+OUTPUT
+DEPTNO	SUM(SAL)
+------	--------
+1		18000
+2		17000
+```
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td>
+
+```sql
+select dname, sum(sal) from emp, dept
+where dept.deptno = emp.deptno
+group by dname;
+DNAME	SUM(SAL)
+```
+</td>
+<td>
+
+```sql
+select upper(dname), sum(sal) from emp, dept
+where dept.deptno = emp.deptno
+group by upper(dname)
+having sum(sal) > 10000
+order by 1;
+```
+</td>
+<td>
+
+```
+OUTPUT
+DNAME	SUM(SAL)
+------	--------
+TRN		18000
+EXP		17000
+```
+</td>
+</tr>
+</table>
+
+### Type of Joins (5)
+1. Equi-join (Natural join)
+	- Join based on equality condition
+	- Shows me matching rows of both the tables
+	- Most frequently use join (>90%), hence it is known as Natural join.
+	- Will get data which is belong to group.
+<table>
+<tr>
+<td>
+
+```sql
+select dname, ename, from emp, dept
+where dept.deptno = emp.deptno;
+```
+</td>
+<td>
+
+```
+OUTPUT
+DNAME	ENAME
+------	--------
+TRN		Arun
+TRN		Ali
+TRN		Kirun
+EXP		Jack
+EXP		Thomas
+```
+</td>
+</tr>
+</table>
+
+2. in-equi-join (Non-equi-join)
+	- Join based on inequality condition
+	- Showns me non-matching rows of both the tables
+	- Will get data which is not belong to group.
+	- Used for Exception reports
+		- Who are the emps who don't belong to Training
+		- Who are the customers who haven't made the payment
+<table>
+<tr>
+<td>
+
+```sql
+select dname, ename, from emp, dept
+where dept.deptno != emp.deptno; 
+```
+</td>
+<td>
+
+```
+OUTPUT
+DNAME	ENAME
+------	--------
+TRN		Jack
+TRN		Thomas
+EXP		Arun
+EXP		Ali
+EXP		Kirun
+MKTG	Arun
+MKTG	Ali
+MKTG	Kirun
+MKTG	Jack
+MKTG	Thomas
+```
+</td>
+</tr>
+</table>
+
+3. Outerjoin
+	- Join with (+) sign, or if you use keyword "Outer"
+	- Shows matching rows of both the tables PLUS non-matching rows of "Outer" table
+	- Outer table -> Table with is on Outer side of (+) sign
+	- Outer table -> Table with is on opposite side of (+) sign
+	- Master-Detail Report (Parent-Child Report) 
+	- Parent table (Master table) , Child table (Details table)    
+	***Please note following***
+	- (+) sign is not supported by MySQL
+	- ANSI syntax for Right Outerjoin is supported by MySQL
+	- ANSI syntax for Left Outerjoin is supported by MySQL
+	- ANSI syntax for Full Outerjoin is supported by MySQL
+		- Union of ANSI syntax for Right Outerjoin & ANSI syntax for Left Outerjoin
+	1. Half outer join   
+		- Here, dept is do-while loop & emp is for loop
+		1. Right Outerjoin
+            <table>
+            <tr>
+            <td>
+
+            ```sql
+            select dname, ename, from emp, dept
+            where dept.deptno = emp.deptno (+);
+            ```
+            ```sql
+            --ANSI syntax
+            select dname, ename form emp right outer join dept
+            on (dept.deptno = emp.deptno);
+            ```
+            </td>
+            <td>
+
+            ```
+            OUTPUT
+            DNAME	ENAME
+            ------	--------
+            TRN		Arun
+            TRN		Ali
+            TRN		Kirun
+            EXP		Jack
+            EXP		Thomas
+            MKTG	empty/null
+            ```
+            </td>
+            </tr>
+            </table>
+		2. Left Outerjoin
+            Assume 6th emp - (6,'Scott', 8000, 4, C, 4);
+            <table>
+            <tr>
+            <td>
+
+            ```sql
+            select dname, ename, from emp, dept
+            where dept.deptno (+) = emp.deptno;
+            ```
+            ```sql
+            --ANSI syntax
+            select dname, ename form emp left outer join dept
+            on (dept.deptno = emp.deptno);
+            ```
+            </td>
+            <td>
+
+            ```
+            OUTPUT
+            DNAME		ENAME
+            ------		--------
+            TRN			Arun
+            TRN			Ali
+            TRN			Kirun
+            EXP			Jack
+            EXP			Thomas
+            empty/null	Scott
+            ```
+            </td>
+            </tr>
+            </table>
+	2. Full Outer join
+	- Here, dept is do-while loop & emp is also do-while loop
+	- Nested do-while loop
+	- Shows matching rows of both the tables PLUS non-matching rows of both the tables
+	- UNION of right Outerjoin and left Outerjoin
+        <table>
+        <tr>
+        <td>
+
+        ```sql
+        select dname, ename, from emp, dept
+        where dept.deptno = emp.deptno (+)
+            union
+        select dname, ename, from emp, dept
+        where dept.deptno (+) = emp.deptno;
+        ```
+        ```sql
+        --ANSI syntax
+        select dname, ename form emp full outer join dept
+        on (dept.deptno = emp.deptno);
+        ```
+        ```sql
+        select dname, ename, from emp right outer join dept
+        where dept.deptno = emp.deptno (+)
+            union
+        select dname, ename, from emp left outer join dept
+        where dept.deptno (+) = emp.deptno;
+        --This will automatically suppress duplicates
+        ```
+        </td>
+        <td>
+
+        ```
+        OUTPUT
+        DNAME		ENAME
+        ------		--------
+        TRN			Arun
+        TRN			Ali
+        TRN			Kirun
+        EXP			Jack
+        EXP			Thomas
+        MKTG		empty/null
+        empty/null	Scott
+        ```
+        </td>
+        </tr>
+        </table>
+
+4. Inner join
+	By default every join is Inner join; putting a (+) sign or using the keyword "Outer" is what makes it an Outerjoin
+	- **DO NOT MENTION THIS IN INTERVIEW UNLESS EXPLICITLY ASKED BY INTERVIEWER**
+
+5. Cartesian join (Cross join)
+	- Join without a WHERE clause
+	- Every row of driving table is combined with each and every row of driven table.
+	- It takes the cross product of 2 table & therefore it's also known as Cross join.
+	- Fastest Join (As no WHERE Clause resulting no searching)
+	- Used for printing purposes
+		- e.g. In students table you have all the students names, in SUBJECTS table you have all the subjects names; When you are printing the mark-sheets for the students, every student name is combined with each and every subject name.
+
+<table>
+<tr>
+<td>
+
+```sql
+select dname, ename from emp, dept; 
+--Fast (Lesser the I/O between Server HD & Server RAM, the faster it will be.
+```
+```sql
+select dname, ename from dept, emp
+order by 1;
+--Slow (More the I/O between Server HD & Server RAM, the slower it will be.
+```
+</td>
+<td>
+
+```
+OUTPUT
+DNAME		ENAME
+------		--------
+TRN			Arun
+TRN			Ali
+TRN			Kirun
+TRN			Jack
+TRN			Thomas
+EXP			Arun
+EXP			Ali
+EXP			Kirun
+EXP			Jack
+EXP			Thomas
+MKTG		Arun
+MKTG		Ali
+MKTG		Kirun
+MKTG		Jack
+MKTG		Thomas
+```
+</td>
+</tr>
+</table>
+
+6. Self join
+	- Joining a table to itself.
+	- Used when parent column and child column, both are present in same table
+	- Slowest join (Based on Recursion)
+	- Use, Employee name & Manager name
+	
+<table>
+<tr>
+<td>
+
+```sql
+select a.ename, b.name from emp as b, emp as a
+where a.mgr = b.empno;
+```
+</td>
+<td>
+
+```
+OUTPUT
+a.ENAME		b.ENAME
+------		--------
+Aun			Jack
+Ali			Arun
+Kirun		Arun
+Thomas		Jack
+```
+</td>
+</tr>
+</table>
+
+### Joining 3 or More Tables
+![D5 Draw3]()
+<table>
+<tr>
+<td>
+
+```sql
+select dname, ename, dhead from emp, dept, depthead
+where depthead.deptno = dept.deptno
+and dept.deptno = emp.deptno;
+--It's nested for loop upto 3 levels
+```
+</td>
+<td>
+
+```
+OUTPUT
+DNAME		ENAME		DHEAD
+------		------		------
+TRN			Arun		Arun
+TRN			Ali			Arun
+TRN			Kirun		Arun
+EXP			Jack		Jack
+EXP			Thomas		Jack
+```
+</td>
+</tr>
+</table>
+
+### Types of Relationships between tables
+1. 1:1
+	- Dept : Depthead
+2. 1:Many
+	- Dept : Emp, Depthead : Emp
+3. Many:1
+	- Emp : Dept, Emp : Depthead
+4. Many:Many
+    ```
+                Projects	
+    ProjectNo	ClientName		Desc
+    P1			Deloitte		CGS
+    P2			Morgan Stanley	AMS
+    P3			BNM Paribas		Macros
+    P4			ICICI Bank		PPS
+    P5			AMFI			Website
+    ```
+    Intersection Table
+    ```
+    Project_Emp
+    ProjectNo	EmpNo
+    P1			1
+    P1			2
+    P1			4
+    P2			1
+    P2			5
+    P3			2
+    P3			4
+    ```
+    Intersection table is required for Many:Many Relationship
+
+```sql
+select client)name, ename, from projects_emp, emp, projects
+where projects_emp.projno = projects.projno
+and projects_emp.empno = projects.empno
+order by 1,2;
+```
+D6.2 Sub-queries
+
+### Sub-queries
+- Subqueries are nested queries (i.e. Query withing query(SELECT withing SELECT))
+
+Display the ENAME who is receiving SAL = min(SAL) :-
+```sql
+select ename from emp
+where sal = (select min(sal) from emp);
+--First SELECT statement is known as Main Query (Parent/Outer Query)
+--Second SELECT statement is known as Sub Query (Child/Inner Query)
+```
+- Max upto 255 levels for Sub-queries
+- This limit of SQL can be exceeded with the help of Views
+- More the no of SELECT statement, the slower it'll be
+- Less the no of SELECT statement, the faster it'll be
+- In somecases, join queries can be replaced with Sub-queries; but Sub-queries is slower than join.
+
+```sql
+--2nd largest sal
+select max(sal) from emp
+where sal < (select max(sal) from emp);
+```
+```sql
+--Display all the rows who belong to the same DEPTNO as 'Thomas'
+select * from emp
+where deptno = (
+	select deptno from emp
+	where ename = 'Thomas');
+```
+
+```sql
+--Display all the rows who belong to the same JOB as 'Kirun'
+select * from emp
+where job = (
+	select job from emp
+	where ename = 'Kirun');
+```
+
+#### Using Sub-query with DML commands
+1. In other RDBMS
+
+```sql
+delete * from emp
+where deptno = (
+	select deptno from emp
+	where ename = 'Thomas');
+```
+```sql
+update emp set sal = 10000
+where job = (
+	select job from emp
+	where ename = 'Kirun');
+```
+- ABOVE 2 COMMSNDS WILL NOT WORK IN MySQL   
+- IN MySQL YOU CANNOT UPDATE OR DELETE FROM A TABLE FROM WHICH YOU ARE CURRENTLY SELECTING
+
+```
+ABCD TABLE
+  DEPTNO
+	2
+```
+Can I do something like function to call instead of whole select statement.
+```sql
+delete * from emp
+where deptno = (
+	select abcd.deptno from (
+		select deptno from emp
+		where ename = 'Thomas') abcd);
+```
+```sql
+update emp set sal = 10000
+where job = (
+	select pqr.job from (
+		select job from emp
+		where ename = 'Kirun') pqr);
+```
+
+#### Multi-row Sub-queries
+Sub-query returns multiple rows
+Display all the rows who are receiving sal = any of the managers
+```sql
+select * from emp
+where sal =any(
+	select sal from emp
+	where job = 'M');
+```
+```sql
+select * from emp
+where sal IN(
+	select sal from emp
+	where job = 'M');
+```
+```sql
+--usability
+select * from emp
+where deptno = 1 AND sal IN(
+	select sal from emp
+	where job = 'M') AND MGR = (SELECT...);
+```
+
+```sql
+select * from emp
+where sal >= (
+	select min(sal) from emp
+	where job = 'M');
+```
+- To make it work faster:-
+	1. Try to solve the problem using join, bcz join is faster than sub-query
+	2. Try to reduce the number of levels for sub-queries.
+	3. Try to reduce the number of rows returned by sub-quary
+
+- Assumption 3rd row SAL is 13000   
+
+Display all the rows who are receiving SAL > all the managers
+<table>
+<tr>
+<td>
+
+```sql
+select * from emp
+where sal >all(
+	select sal from emp
+	where job = 'M');
+```
+</td>
+<td>
+
+```sql
+select * from emp
+where sal > (
+	select max(sal) from emp
+	where job = 'M');
+```
+</td>
+</tr>
+</table>
+
+ALL -> logical AND   
+ANY -> logical OR   
+IN -> logical OR 
+
+#### Using Sub-query in HAVING clause
+- Assimption 3rd row SAL is 3000
+- Inline view - If you have sub-query in the FROM clause then it's known as Inline View.
+Display DNAME that having max(sum(sal))
+<table>
+<tr>
+<td>
+
+```sql
+select deptno, sum(sal) from emp
+group by deptno;
+```
+</td>
+<td>
+
+```
+deptno	sum(sal)
+------	--------
+1		18000
+2		17000
+```
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td>
+
+```sql
+select sum(sal) from emp
+group by deptno;
+```
+</td>
+<td>
+
+```
+sum(sal)
+--------
+18000
+17000
+```
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td>
+
+```sql
+select sum(sal) sum_sal from emp
+group by deptno;
+``` 
+</td>
+<td>
+
+``` 
+sum_sal
+--------
+18000
+17000
+```
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td>
+
+```sql
+select max(sum_sal) from
+(select sum(sal) sum_sal from emp
+group by deptno) abcd;
+```
+</td>
+<td>
+
+```
+max(sum_sal)
+--------
+18000
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+select deptno, sum(sal) from emp
+group by deptno
+having sum(sal) = 
+(select max(sum_sal) from
+(select sum(sal) sum_sal from emp
+group by deptno) abcd);
+```
+</td>
+<td>
+
+```
+deptno	sum(sal)
+------	--------
+1		18000
+```
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td>
+
+```sql
+select dname, sum(sal) from emp, dept
+where dept.deptno = emp.deptno
+group by dname
+having sum(sal) = 
+(select max(sum_sal) from
+(select sum(sal) sum_sal from emp
+group by deptno) abcd);
+```
+</td>
+<td>
+
+```
+dname	sum(sal)
+------	--------
+TRN		18000
+```
+</td>
+</tr>
+</table>
+
+#### Correlate sub-query (Using the Exist operator)
+- This is exception when sub-query is faster than join
+- If you have join along with DISTINCT, to make it work faster use Correlated sub-query (use the EXISTS operator)   
+Display the DNAMEs that contain employees & the DNAMEs that do contain employees
+
+<table>
+<tr>
+<td>
+
+##### **Solution #1:** 
+```sql
+select deptno from emp;
+```
+```
+OUTPUT
+1
+1
+1
+2
+2
+```
+```sql
+select distinct deptno from emp;
+```
+```
+OUTPUT
+1
+2
+```
+```sql
+select dname from dept
+where deptno =any
+(select disting deptno from emp);
+```
+```
+OUTPUT
+TRN
+EXP
+```
+```sql
+select dname from dept
+where deptno in
+(select distinct deptno from emp);
+```
+```
+OUTPUT
+TRN
+EXP
+```
+```sql
+select dname from dept
+where deptno not in
+(select distinct deptno from emp);
+```
+```
+OUTPUT
+MKTG
+```
+
+</td>
+<td>
+
+##### **Solution #2:**
+```sql
+select dname from emp, dept
+where dept.deptno = emp.deptno;
+```
+```
+OUTPUT
+TRN
+TRN
+TRN
+EXP
+EXP
+```
+```sql
+select distinct dname from emp, dept
+where dept.deptno = emp.deptno;
+```
+```
+OUTPUT
+TRN
+EXP
+```
+
+** ##### Solution #3:**
+```sql
+select dname from dept where EXISTS
+(select deptno from emp
+where dept.deptno = emp.deptno);
+```
+```
+OUTPUT
+TRN
+EXP
+```
+```sql
+select dname from dept where not EXISTS
+(select deptno from emp
+where dept.deptno = emp.deptno);
+```
+```
+OUTPUT
+MKTG
+```
+
+</td>
+</tr>
+</table>
+
+- First the main query is executed
+- For every row returned by main query, it will run the sub-quary once
+- sub-quary returns boolean TRUE value or FALSE value
+- If sub-query returns TRUE value, then main query is eventually executed for that row
+- If sub-query returns FALSE value, then main query is not executed for that row
+- Unlike earlier, we do not use DISTINCT here, therefore no sorting takes place in Server RAM; this speeds it up
+- Unlike a Join, the number of full table scans is reduce; this further speeds it up.
+
+# D7
+D7.1 Set Operators
+
+## Set Operators
+	- Foundation of RDBS based on Set theory
+	- Dr. E. F. Codd is founder of RDBMS
+	- UNION, UNION ALL, INTERSECT, EXCEPT
+```	
+	EMP1				EMP2	
+EMPNO	ENAME		EMPNO	ENAME
+1		A			1		A
+2		B			2		B
+3		C			4		D
+					5		E
+```
+##### UNION
+<table>
+<tr>
+<td>
+
+```sql
+select empno1, ename from emp1
+	union
+select empno2, ename from emp2;
+```
+</td>
+<td>
+
+```
+OUTPUT
+EMPNO	ENAME
+-----	-----
+1		A
+2		B
+3		C
+4		D
+5		E
+```
+</td>
+</tr>
+</table>
+ 
+	- Will combine the output of both the SELECT statements and it will suppress the duplicates
+- Structure of both the SELECT statements has to be same
+- Number of columns in both and the corresponding datatype have to match
+- The column names may be different
+- 1st select statement column name will reflect 2 different columns are mentioned in SELECT statement
+- Order by clause should not be mentioned in 1st statement, it'll give error. Instead mention in in 2nd SELECT statement.
+- Use - To combine OUTPUT of multiple tables
+
+##### UNION ALL
+<table>
+<tr>
+<td>
+
+```sql
+select empno1, ename from emp1
+	union all
+select empno2, ename from emp2;
+```
+</td>
+<td>
+
+```
+OUTPUT
+EMPNO	ENAME
+-----	-----
+1		A
+1		A
+2		B
+2		B
+3		C
+4		D
+5		E
+```
+</td>
+</tr>
+</table>
+
+- Union all will combine the output of both the SELECT statement and duplicates are not suppressed
+
+##### INTERSECT
+Intersect will return what is common in both the SELECT statements & duplicates are suppressed
+<table>
+<tr>
+<td>
+
+```sql
+select empno1, ename from emp1
+	intersect
+select empno2, ename from emp2;
+```
+</td>
+<td>
+
+```
+OUTPUT
+EMPNO	ENAME
+-----	-----
+1		A
+2		B
+```
+</td>
+</tr>
+</table>
+
+##### EXCEPT
+
+- Except will return what is present in first SELECT statement & not present in the second SELECT statement & the duplicates are suppressed
+
+<table>
+<tr>
+<td>
+
+```sql
+select empno1, ename from emp1
+	except
+select empno2, ename from emp2;
+```
+</td>
+<td>
+
+```
+OUTPUT
+EMPNO	ENAME
+-----	-----
+3		C
+```
+</td>
+</tr>
+</table>
+
+##### General
+```sql
+select ................
+	union
+select ................
+	intersect
+select ................
+	union
+select ................
+	union all
+select ................
+	except
+select ................
+	order by x;
+```
+- Max upto 255 SELECT statements
+- This limit of SQL can be exceeded with help of Views
+- All are of equal precedence but brackets will have highest priority
+- Need not to select from 2 table, can select form same table
+<table>
+<tr>
+<td>
+
+```sql
+select job from emp where deptno = 10
+intersect
+select job from emp where deptno = 20;
+JOB
+-------
+Manager
+Clerk
+
+select job from emp where deptno = 10
+intersect
+select job from emp where deptno = 20;
+```
+</td>
+<td>
+
+```sql
+select job from emp where deptno = 10
+except
+select job from emp where deptno = 20;
+JOB
+-------
+President
+
+select job from emp where deptno = 10
+intersect
+select job from emp where deptno = 20;
+```
+</td>
+</tr>
+</table>
+
+```sql
+select empno1, ename from emp1
+	except
+select empno2, ename from emp2;
+```
+
+### Psudo Columns 
+- Fake columns(Virtual columns)
+- It's not a column of the table, but you can use it in SELECT statement.
+- eg. computed columns (sal*12 ANNUAL), Expressions (sal+comm-tax NET_EARNINGS), Function-based columns (avg(sal) AVG_SAL, round(sal, -3) R_SAL)
+
+#### RDBMS supplied Pseudo columns
+##### ROWID
+- ROWID is a pseudo column
+- Stands for Row Identifier
+- It is not a column of the table, but you can use it in SELECT statement
+- It is the ROW ADDRESS
+- It is the actual physical memory location in DB server HD where that that row is located.
+- When you select from table, the order of rows in output depends on the row ADDRESS; it will always be in ascending order of ROWID
+- It is fixed-length, encrypted string of 18 characters
+- When you insert a row, the address (ROWID) is constant for the life of the row
+- When you update a row, if the length is descreasing, then address will not change
+- When you update a row, if the length is increasing, and if free space is not availabel, then address may change
+- No 2 rows of any table in the entire DB Server HD can have same ROWID
+- ROWID works as unique identifier for every row in the database
+- ROWID is used by MySQL to distinguish between two rows in the DB Server HD
+- ROWID can be used to update or delete the DUPLICATE ROWs.
+- ROWID is used internally by MySQL for Row locking, to manage indexes, to manage the cursors, to distinguish between 2 rows, row management, etc
+
+```sql
+select rowid, ename, sal from emp;
+```
+
+### Indexes	(Watch again)
+```
+			EMP Table
+ROWID	EMPNO	ENAME	SAL		DEPTNO
+X001	5		A		5000	1
+X002	4		A		6000	1
+X003	1		C		7000	1
+X004	2		D		9000	2
+X005	3		E		8000	2
+```
+- Indexes are present in all RDBMS, all DBMS and some of programming languages also.
+- Used to speed up search operations (For faster access)
+- Used to speed up select statement with a WHERE clause
+- In MySQL, the indexes are automatically invoked by system as & when required.
+- Execution plan -> It is plan created by MySQL as to how it is going to execute the SELECT statement
+- In MySQL, the indexes are automatically updated by the system for all the DML operations
+- Duplicate values are stored in an index
+- No upper limit on the number of indexes per table
+- Larger the number of indexes, the slower would be the DML operations.
+- Cannot index text & blob columns
+- NULL values are not stored in any index
+- If you have 2 or more independent columns in the WHERE clause, then you create separate indexes for each column; MySQL will use necessary indexes as and when required.
+- Composite index -> Combine 2 or more inter-dependent columns together in a single index
+```
+IND_DEPT_EMPNO
+ROWID	DEPTNO	EMPNO
+X001	1		1
+X001	1		2
+X001	1		3
+X001	2		1
+X001	2		2
+```
+- INDEX KEY - is set of columns on whose basis the index has been created
+- Primary index key, here DEPTNO is Primary index key
+- Seconary index key, here EMPNO is Seconary index key
+- In MySQL, you can combine upto 32 columns in composite index.
+
+- In MySQL, feature of ROWID is available, but you cannot view it.
+- In Oracle, feature of ROWID is available, but you can view it.
+
+```sql
+select *  from emp where empno = 1;
+select *  from emp where ename = 'C';
+select *  from emp where sal > 7000;
+```
+
+#### When an Index should be created
+- To speed up statement with WHERE clause
+- If your SELECT retrieves <25% of table data, otherwise it'll slow down
+- Your Primary Key column (unique column) should always be indexed
+- Common column in join operations should always be indexed
+```
+		 DEPT Table
+ROWID	DEPTNO	DNAME	LOC
+Y011	1		TRN		Bby
+Y012	2		EXP		Dlh
+Y013	3		MKGT	Cal
+```
+```sql
+select dname, ename from emp, dept
+where dept.deptno = emp.deptno;
+```
+##### Create INDEX
+Syntax -   
+```sql 
+create index indexname on table(column); 
+```
+```sql
+create index i_emp_empno on emp(empno);
+```
+- Max 30 char allowed for index name
+```sql
+create index i_emp_ename on emp(ename);
+create index i_emp_sal on emp(sal);
+```
+```sql
+--To see which all indexes are created for specific table
+show indexes from emp;
+```
+```sql
+--To see all indexes on all table in the database
+use information_schema;
+select * from statistics;
+```
+```sql
+--To drop index
+drop index indexName on emp;
+```
+```sql
+--To store index in descending order
+create index i_emp_empno on emp(empno desc);
+```
+```sql
+create index i_orders_onum on orders(onum desc);
+```
+```sql
+create index i_emp_empno on emp(deptnpo, empno);
+create index i_emp_empno on emp(deptnpo desc, empno);
+create index i_emp_empno on emp(deptnpo, empno desc);
+create index i_emp_empno on emp(deptnpo desc, empno desc);
+```
+```sql
+create unique index i_emp_empno on emp(empno);
+--Performs extra function, it won't allow to INSERT/UPDATE duplicate value in EMPNO
+--At the time of creating the unique index, if you already have duplicate values in EMPNO, then MySQL will not allow you to create the unique index
+```
+- If you drop the table/column, then associated indexes are droped automatically.
+- Will not allow to create two index for same column.
+
+##### Type of indexes
+1. Normal index
+2. Normal composite index
+3. Unique index
+4. Unique composite index
+5. Clustered index
+6. Non-clustered index
+7. Covering index
+8. Full text index
+9. Filtered index
+10. Spatial index
+11. XML index
+12. Hash index
+13. Bitmap index
+14. Index-Organized table
+15. Table & index partitioning
+16. Global & Local indexes
+17. Index on Abstract columns
+18. etc..
+
+<table>
+<tr>
+<td>
+
+```sql
+--In other RDBMS
+use index ind_empno;
+select * from emp where empno = 1;
+```
+</td>
+<td>
+
+```sql
+--In other RDBMS
+insert/update.delete .....;
+REINDEXs;
+```
+
+</td>
+</tr>
+</table>
+
+
+# D8
+
+D8.1 ALTER TABLE
+
+## ATLER TABLE (DDL Command)
+```
+EMPNO	ENAME	SAL
+101		SCOTT	5000
+102		KING	6000
+```
+### Direct Commands
+
+#### Rename a table
+```sql
+rename table emp to employee;
+```
+- Rename a DDL Command (Extra Command in MySQL)
+#### Add a coulmn to the table
+```sql
+alter table emp add gst float;
+```
+#### DROP a column
+```sql
+alter table emp drop column gst;
+```
+- If you drop a columnm then indexes on that column are dropped automatically
+#### To increase the length
+```sql
+alter table emp modify ename varchar(30); --varchar(25)->30
+```
+
+### Indirect Commands
+
+#### Reduce width of column
+
+```sql
+alter table emp modify ename varchar(30); --varchar(25)->30
+```
+- In MySQL, data will get truncated   
+Parthavi -> Partha, Sameer -> Sam
+- In Oracle, it'll give ERROR, but you can reduce the width provided the contents are null
+	- alter table emp add x charvar(25);
+	- update emp set x = ename, ename = null;
+	- /*Data testing with X column; ckeck that none of names > 20 chars*/
+	- update emp set ename = x;
+	- alter table emp drop column x;
+- It's recommended you use above solution for MySQL
+- Extension columns used to extend the table for future requirements
+#### Change the datatype
+
+int(11) -> char(20)s
+```sql
+alter table emp modify empno char(20);
+sarke uparse
+```
+#### Copy the rows from one table imto other avopy og tanle
+```sql
+insert into emp_kh select * from emp_jh;
+```
+-Above command will work procta
+- IF YOU WANT TO COPY SPECIFICALLY
+```sql
+INSERT INTO emp_kh
+SELECT * FROM EMP_JH WHERE...
+```
+```sql
+INSERT INTO emp_kh
+SELECT * FROM EMP_JH WHERE DEPT = 1...
+```
+```sql
+INSERT INTO emp_kh
+SELECT EMPNO, ENAME FROM EMP_JH WHERE DEPT = 1...
+```
+#### Copy of the table
+```sql
+create table emp2
+as
+select * from emp;
+```
+It'll create table emp2  as per structure of SELECT Statement 
+SELECT Statement will be executed
+- When you create table using sub-query, indexes on original table are not copied into new tables.
+- If you want to indexes on new table, you will have to create them manually.
+##### To copy specific row/column ONLY
+```sql
+create table emp2
+as
+select empno, ename, from emp where......;
+```
+
+#### Copy only the structure of the TABLE
+
+##### Solution 1
+```sql
+create table emp2
+as
+select * from emp;
+delete from emp2;
+commit;
+```
+##### Solution 3
+```sql
+create table emp2
+as
+select * from emp;
+truncate table emp2;
+--TRUNCATE is DDL Command
+--TRUNCATE is DDL Command
+--TRUNCATE will delete all the rows & commit
+```
+##### Solution #3
+```sql
+create table emp2 as select * from  emp
+where 1 = 2;
+```
+
+###### Difference btween Delete & Truncate
+
+<table>
+<tr>
+<td>
+
+```
+1. Command for all RDBMS
+2. ANSI SQL &(ANSI & ISO Stds)
+3. DML Command
+4.It requires commite
+5. Rollback is possible
+6. WHERE Clause is supported; can DELETE specific rows
+```
+</td>
+<td>
+
+```
+1. Truncate is extra command in Oracle & MySQL
+2. Not ANSI SQL (MySQL StDs, abd oracle stds(
+6. DDL Command
+4. Autocommit
+6. Rollback no passible
+6. Where clause not supported; Truncate will delete all the rows and commit
+
+```
+
+</td>
+</tr>
+</table>
+
+#### Rename a column
+```sql
+create table emp2
+as
+select empno, ename, sal salary from emp;
+drop table emp;
+rename table emp2 to emp;
+```
+#### Change the position of the columns:
+```sql
+create table emp2
+as
+select ename, sal, empno from emp;
+drop table emp;
+rename table emp2 to emp;
+```
+
