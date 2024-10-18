@@ -3310,3 +3310,270 @@ drop table emp;
 rename table emp2 to emp;
 ```
 
+# D9
+
+D9.1 Check Constraints
+
+## CHECK CONSTRAINT
+- Used for validations (used for checking purposes)
+```sql
+create table emp(
+empno int auto_increament primary key,
+sal float default 7000
+	check(sal between 5001 and 2999999),
+deptno int reference dept(deptno),
+status char(1) default 't'
+	check(status in('T', 'P', 'R')),
+comm float not null,
+mob_no char(15) unique,
+check(sal+comm <5000000)
+);
+```
+```Statsus: T-> Temporary, P->Permenant, R-> Retired```
+- DEFAULT is not a contraint
+- DEFAULT is clause that you can use with CREATE TABLE
+- If you enter some value, then it will take tahat value; if nothing is specified, then it'll take default value
+- To make use of DEFAULT value & AUTO_INCREAMENT, use of following INSERT statement
+```sql
+insert into emp(ename, deptno, comm, mob_no)
+value(................);
+```
+- AUTO_INCREAMENT
+	- By default is start from 1, by default it increaments by 1
+
+```	
+Relational Operators
+Logical Operators
+Arithmatic Operators
+Special Operators, e.g.
+BETWEEN, IN, LIKE, etc.
+Can call Single-Row function, e.g.
+UPPER, ROUND, etc.
+```
+```sql
+insert intoemp(ename, sal) value('A', 5000);
+insert intoemp(ename, sal) value('B', 6000);
+insert intoemp(ename, sal) value('C', 7000);
+exit;
+insert intoemp(ename, sal) value('C', 6000);
+```
+- Rollback & Commit have no effect on auto_increament (it has been designed in this manner on purpose keep in view a multi-use evironment)
+
+#### To avoid the problem of missing number
+- Do not issue the INSERT statement to database at time of data entry; when user does the data entry, you store the rows in an array; when use issues a commit, you issue the INSERT statement to database followed by COMMIT
+
+D9.2 Privileges
+
+## PRIVILEGES
+- DDL	1. GRANT 2. REVOKE
+
+```sql
+root_mysql> grant select on cdacmumbai.emp to scott@localhost;
+--No need to grant separate permission for index, once select privilege is given, it'll us index automatically
+root_mysql> grant insert on cdacmumbai.emp to scott@localhost;
+root_mysql> grant update on cdacmumbai.emp to scott@localhost;
+root_mysql> grant delete on cdacmumbai.emp to scott@localhost;
+root_mysql> grant select,insert on cdacmumbai.emp to scott@localhost;
+root_mysql> grant all privileges on cdacmumbai.emp to scott@localhost, king@localhost;
+grant select on cdacmumbai.emp to public; --open to all
+revoke select on cdacmumbai.emp to scott@localhost;
+```
+```sql
+select * from information_schema.table_privileges;
+```
+
+![Priv](/DBT/D9/Privileges.png)
+
+```sql
+--Not if scott@localhost want to perform action on table in cdacmumbai
+mysql> use usa;
+mysql> select * from cdacmumbai.emp;
+mysql> insert into cdacmumbai.emp ....;
+mysql> update cdacmumbai.emp set ....;
+mysql> delete from cdacmumbai.emp where ....;
+mysql> 
+```
+```sql
+create user amit@localhost identified by 'student';
+create user amit@'%' identified by 'student';
+create user amit@l'd%' identified by 'student';
+create user amit@l'paresh' identified by 'student';
+create user amit@l'joshi%' identified by 'student';
+```
+
+## SYSTEM TABLES
+- These are MySQL created
+- automatically created when you install MySQL
+- 78 system tables in MySQL v9
+- set of system tables is also knwon as DATABASE CATALOG
+- set of system tables is also knwon as DATABASE DICTIONARY
+- Stored in information_schema
+```sql
+use information_schema;
+show tables;
+```
+
+- Stystem tables store complete information about the database
+- E.g. statistics (for indexes), table_constraints, key_column_usgae, table_privileges, etc.
+- DBA -> DATABASE ADMINISTRATOR
+- All the system tables are READ_ONLY
+- DDL FOR USER IS DML FOR SYSTEM TABLES
+
+Data is of 2 types
+1. User Data
+	- User created
+	- User tables & indexes
+2. System Data
+	- MySQL created
+	- data is stored in System Tables
+	- Also knwon as Metadata (Data about data)
+
+![Arch](/DBT/D9/DB%20Architecture.png)
+
+Something is based on Linux Kernel
+
+## Stored Objects
+- Objects that are stored in the DATABASE
+	- e.g. CREATE ... tables, indexes; VIEWS, etc
+- Anything that you do with CREATE Command is a stored object
+
+### VIEWS
+- Present in all RDBMSs and some of DBMS(Foxpro, excel)
+- View is a handle to a table
+- Stores the address of the table
+- View is a HardDisk(HD) pointer -> Stores the address of table <- also known as LOCATOR
+- Used for indirect access to the table
+- Used for SECURITY Purposes
+- Used to restrict access of users
+- Max 30 characters
+- View name - table name cannot be same
+```sql
+--To create a view
+create view viewname ...;
+```
+```sql
+--To create a view
+create view viewname v1
+	as
+	select empno, ename from emp;
+--OUTPUT -> View Created.
+```
+- Stored query V1=select empno, ename from emp
+- Amit wants to share this view to scott
+	```sql
+	root_mysql> grant select on cdacmumbai.v1 to scott@localhost;
+	- Here instead of giving access to table directly, we give access to restricted view of table
+	```
+- Now to access table scott have to 
+```sql
+root_mysql> select * from cdacmumbai.emp; --Wrong
+root_mysql> select * from cdacmumbai.v1;	--Right
+```
+- View doesn't contain data, only the definition is store
+- View is stored query
+- SELECT statement on which the view is based, it is stored in the DB in COMPILED FORMAT
+- View is executable format of SELECT statement
+- Hence Execution will be fast
+- Benifit of COMPILED FORMAT is hiding source code from end user
+```sql
+grant select, insert on cdacmumbai.v1 to scott@localhost
+insert into cdacmumbai.v1 values(6, 'F');
+```
+- DML operations can be performed on View
+- DML operations done on a view will affect the base table
+- Constraints that are specified on table will enforced even when you insert via the view
+- ENTIRE APPLICATION IS BASED ON VIEWS 
+```sql
+drop view v1;
+```
+```sql
+create view v2
+	as
+select * emp where deptno = 1;
+--used to restrict the row access
+insert into v2 value(6, 'F', 6000, 2); --Allow
+```
+```sql
+create view v2
+	as
+select * emp where deptno = 1 with check option;
+--used to restrict the row access
+insert into v2 value(6, 'F', 6000, 2); --ERROR
+```
+- View with check option is similar to check constraint
+- Used to enforce different checks for different users
+To change SELECT statement of view
+```sql
+drop view v1;
+create view v1 as ......;
+```
+```sql
+drop view v1;
+create or replace view v1
+as
+select ename, sal emp;
+```
+```sql
+drop view v1;
+create view v1 as ......;
+```
+- Show Table
+	- Will show tables & views but it won't tell which is table & which is View   
+	To find out which is table & which is View
+	```sql
+	show full tables;
+	desc emp; desc v1;
+	```
+
+#### View based on fake columns
+<table>
+<tr>
+<td>
+
+```sql
+create or replace view v1
+	as
+select * upper(ename) "u_ename", sal*12 "Annual" from emp;
+```
+- View based on computed column, expression, function, order by clause, gourp by clause, etc.
+- You can select from this view
+- DML operations are not allowed
+- Common for all RDBMS
+
+</td>
+<td>
+
+```sql
+create or replace view v1
+	as
+select dname, ename from emp, dept
+where dept.deptno = emp.deptno;
+```
+- View based on join, sub-query, UNION, etc.
+- You can select from this view
+- DML operations are not allowed
+- Common for all RDBMS
+
+</td>
+</tr>
+</table>
+
+- To see select statement on which view is based
+```sql
+show create view v1;
+V1 = select .....
+--Will get to see which select statement is used
+```
+
+#### View based on view is allowed
+Users
+	- To exceed the limit is allowed
+		- UNION > 255 SELECT statements
+		- Sub-query > 255 levels
+		- Function withing function > 255 levels
+	- To simplify the writing of complex SELECT statements
+		- Join of 40 tables
+		- Complex queries can be stored in view definition
+
+# D10
+
