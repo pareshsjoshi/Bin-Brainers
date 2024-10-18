@@ -3366,6 +3366,13 @@ D9.2 Privileges
 
 ## PRIVILEGES
 - DDL	1. GRANT 2. REVOKE
+		EMP Table						USER Table
+EMONO	ENAME	SAL		DEPTNO		USER	DATABASE
+1		A		5000	1			Scott	USA
+2		B		6000	1			Soham	PUNE
+3		C		7000	1			
+4		D		9000	2			
+5		E		8000	2	
 
 ```sql
 root_mysql> grant select on cdacmumbai.emp to scott@localhost;
