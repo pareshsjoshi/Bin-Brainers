@@ -3517,8 +3517,6 @@ SUPER KEY -> is defination
 SUPER KEY -> if you have 1 or more alternate keys in table, then the PRIMARY KEY is also known as SUPER KEY
 
 
-**Lost 15 mins**
-
 ### Foreign KEY
 - Foreign column (column that is coming/derived from elsewhere)
 - Column or set of columns that refernce from a column or set of column of some table
@@ -3541,6 +3539,7 @@ create table emp(
 empno char(4) PRIMARY KEY,
 ename varchar(25),
 sal float,
+deptno int,
 mgr char(4),
 constraint fk_emp_deptno foreign key(deptno)
 reference dept(deptno),
@@ -3569,12 +3568,17 @@ set global Foreign_key_checks = 0;
 set global Foreign_key_checks = 1;
 ```
 - You cannot delete parent row when child row exists
-- ON DELETE CASCADE -> If you delete the parent row then, MySQL will automatically delete the child rows as well
+<table>
+<tr>
+<td>
+
+- ON DELETE CASCADE -> If you delete the parent row, then MySQL will automatically delete the child rows as well
 ```sql
 create table emp(
 empno char(4) PRIMARY KEY,
 ename varchar(25),
 sal float,
+deptno int,
 mgr char(4),
 constraint fk_emp_deptno foreign key(deptno)
 reference dept(deptno) on delete cascade,
@@ -3582,13 +3586,16 @@ constraint fk_emp_mgr foreign key(mgr)
 reference emp(empno)
 );
 ```
+</td>
+<td>
 
-- ON UPDATE CASCADE -> If you update the parent row then, MySQL will automatically update the child rows as well
+- ON UPDATE CASCADE -> If you update the parent row, then MySQL will automatically update the child rows as well
 ```sql
 create table emp(
 empno char(4) PRIMARY KEY,
 ename varchar(25),
 sal float,
+deptno int,
 mgr char(4),
 constraint fk_emp_deptno foreign key(deptno)
 reference dept(deptno) on delete cascade on update cascade,
@@ -3596,6 +3603,10 @@ constraint fk_emp_mgr foreign key(mgr)
 reference emp(empno)
 );
 ```
+</td>
+</tr>
+</table>
+
 - If you want to retain child rows
 ```sql
 update emp set deptno = null where deptno = 2;
@@ -3884,7 +3895,83 @@ Users
 
 # D10
 
-YET TO UPDATE THIS NOTES
+D10.1 PL - Programming Language
+
+## Delimiter
+
+```select * from emp;```
+- ; is known as delimiter
+- it indicates end of command
+- We can change delimiter, but it'll be for current session
+```sql
+delimiter .
+select * from emp.
+select sal*0.1 from emp.
+delimiter *
+select * from emp*
+delimiter //
+select * from emp//
+select sal/10 from emp//
+```
+
+- **Changing the delimiter is known as Personalisation**
+
+## MySQL-PL
+- MySQL Programming Language
+- Programming language from MySQL
+- It is product of MySQL
+- Used for database programming, e.g. HRA_CAL, TAX_CAL, ATTENDANCE_CALC, etc (Basically it used for server-side data processing)
+- Every RDBMS has it's own native programming language
+- Oracle (PL/SQL) - Procedural Language SQL (Most popular language for commercial RDBMS)(63%)
+- MS SQL - (T-SQL) - Transact SQL (commercial RDBMS)(16%)
+- MySQL (MySQL-PL) - MySQL Programming Language (Most popular language for open-source RDBMS)(42%)
+- MySQL-PL program can be called in MySQL Command Line Client, MySQL Workbench, Java, MS .Net, C++, etc; can be MISSED
+
+```sql
+Begin
+	insert into dept values(1, a', 'B');
+End;
+```
+- Screen input and screen output is not allowed(scanf, printf, etc.)
+- used only for processing.
+- Can use SELECT statement inside block but it's not recommended
+- SQL Commands that are allowed inside MySQL-PL block: DDL, DML, DQL, DTL/TCL
+- DCL commands are not allowed inside MySQL-PL program
+- MySQL-PL programs are written in form of stored procedures
+```sql
+delete from emp
+where deptno = (select deptno from emp where ename = 'Thomas');
+```
+- To store output of MySQL-PL program
+1. Create output table
+```sql
+create table tempp(
+fir int
+sec char(15)
+);
+```
+
+
+### STORED OBJECTS
+- Objects that are stored in database
+- CREATE ... table, indexes, views
+- Anything that you do with CREATE command is stored Objects
+
+#### STORED PROCEDURES
+- Routine (set of commands) that has called explicitly
+- Global Procedures
+- Store in database
+- Can be called through MySQL Command Line Client, MySQL Workbench, Java, MS .Net, etc; can be called through any front-end s/w
+- Stored in the database in COMPILED FORMAT
+- Hiding the source code from end user
+- Execution takes place in Server RAM
+- Therefore ideally suited for server-side data processing
+- Can have local variables
+- within the procegure you can have any processing, all MySQL-PL statements allowed, e.g. if statement, loops, cursors, etc.
+- One procedure can call another procedure
+- Procedure can call itself(Recursion)
+- To make it flexible, you can pass parameters to a procedure
+- OVERLOADING of stored procedure is not supported, you cannot create 2 or more procedures with same name, even if the number of parameters passed os different or the datatype of parameters passed is different; bcz it's a stored object
 
 ### PROGRAMMING
 - Setting output table tempp
@@ -4504,3 +4591,1694 @@ FIR		SEC
 </td>
 </tr>
 </table>
+
+# D11
+
+D11.1 Cursor
+
+## Cursor
+
+- Cursor is based on select statement
+- Select statement on which cursor is based could be anything, e.g. select col1, col2,...coln, where clause order by clause, group by clause, etc.
+- You can have cursor based on join, subqueries, set operators, view, etc
+- You can have cursor based on computed column, expression, function, etc
+- Cursor is READ ONLY variable, it cannot be manipulated
+- You will have to fetch 1 row at a time into some intermediate variables, and do you processing with those variables
+- You can only fetch sequentially (top to bottom)
+- You cannot fetch backwards in MySQL cursor
+- You can only fetch 1 row at a time
+- Declare a continue handler for not found event
+- NOT FOUND is cursor attributel it returns a boolean TRUE value if the last fetch was unsuccessful, and false value if the last fetch was successful
+
+```sql
+--Syntax
+delimiter //
+create procedure abc()
+begin
+	declare a int;
+	declare b varchar(15);
+	declare c int;
+	declare d int;
+	declare x int default 0;
+	declare c1 cursor for select * from emp;
+	open c1;
+	while x < 5 do
+		fetch c1 into a, b, c, d;
+		 /* processing, e.g. set hra = c*0.4, etc. */
+		insert into tempp values(a, b);
+		set x = x+1;
+	end while;
+	close c1;
+end; //
+delimiter ;
+```
+
+empno	ename	sal		deptno
+1		A		5000	1
+2		B		6000	1
+3		C		7000	1
+4		D		9000	2
+5		E		8000	2
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create procedure abc()
+begin
+	declare a int;
+	declare b varchar(25);
+	declare c int;
+	declare d int;
+	declare x int default 1;
+	declare cursor for select * from emp;
+	open c1;
+	while x < 6 do --<- Try for 3/4 letter
+	--while x < 11 this is going to give an error
+		fetch c1 into a,b,c,d;
+		--processing
+		insert into tempp values(a,b);
+		set x = x+11;
+	end while;
+	close c1;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+call abc();
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+1		A
+2		B
+3		C
+4		D
+5		E
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create procedure abc()
+begin
+	declare a int;
+	declare b varchar(25);
+	declare c int;
+	declare d int;
+	declare x int default 1;
+	declare y int;
+	declare cursor for select * from emp;
+	select count(*) into y from emp;
+	open c1;
+	while x < y do
+		fetch c1 into a,b,c,d;
+		--processing
+		insert into tempp values(a,b);
+		set x = x+11;
+	end while;
+	close c1;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+Generalised Cursor Syntax For N Rows especially for solving the while loop problem
+call abc();
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+1		CDAC
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create procedure abc()
+begin
+	declare a int;
+	declare b varchar(25);
+	declare c int;
+	declare d int;
+	declare y int default 0;
+	declare cursor for select * from emp;
+	declare continue handler for not found set y = 1;
+	open c1;
+	cursor_c1_loop:loop
+		fetch c1 into a,b,c,d;
+		if y = 1 then
+			leave cursor_c1_loop;
+		end if;
+		--processing
+		insert into tempp values(a,b);
+	end loop cursor_c1_loop;
+	close c1;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+Generalised for  
+call abc();
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+1		A
+2		B
+3		C
+4		D
+5		E
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create procedure abc(dd int)
+begin
+	declare a int;
+	declare b varchar(25);
+	declare c int;
+	declare d int;
+	declare y int default 0;
+	declare cursor for select * from emp where deptno = dd;
+	declare continue handler for not found set y = 1;
+	open c1;
+	cursor_c1_loop:loop
+		fetch c1 into a,b,c,d;
+		if y = 1 then
+			leave cursor_c1_loop;
+		end if;
+		--processing
+		insert into tempp values(a,b);
+	end loop cursor_c1_loop;
+	close c1;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+call abc(1);
+call abc(2);
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+1		A
+2		B
+3		C
+
+4		D
+5		E
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create procedure abc(dd int, ss int)
+begin
+	declare a int;
+	declare b varchar(25);
+	declare c int;
+	declare d int;
+	declare y int default 0;
+	declare cursor for select * from emp
+	where deptno = dd & sal > ss;
+	declare continue handler for not found set y = 1;
+	open c1;
+	cursor_c1_loop:loop
+		fetch c1 into a,b,c,d;
+		if y = 1 then
+			leave cursor_c1_loop;
+		end if;
+		--processing
+		insert into tempp values(a,b);
+	end loop cursor_c1_loop;
+	close c1;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+call abc(1, 5000);
+call abc(2, 6000);
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+2		B
+3		C
+4		D
+5		E
+
+3		C
+4		D
+5		E
+```
+</td>
+</tr>
+</table>
+
+#### USES
+1. For locking the rows manually
+2. For storing/processing multiple rows
+
+- To lock the rows manually
+```sql
+delimiter //
+create procedure abc()
+begin
+	declare c1 cursor for select * from emp for update;
+	open c1;
+	close c1;
+end; //
+delimiter ;
+--Use WHERE clause to lock specific rows
+call abc();
+``` 
+- Locks are automatically released when you rollback or commit
+
+D11. Parameters
+
+## PARAMETERS
+- You can pass parameters to a procedure
+- Parameters are of 3 types - IN, OUT, INOUT
+
+### IN PARAMs
+- Read only, can only read input
+- Can pass constant, variable & expression as well
+- Call by value
+- By default parameter is IN only
+- Fastest 
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create procedure abc(in y int)
+begin
+	declare x
+	insert into tempp values(y, 'inside abc');
+end; //
+delimiter ;
+
+delimiter //
+create procedure pqr()
+begin
+	declare x int default 10;
+	call abc(5);
+	call abc(x);
+	call abc(2*x+5);
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+call pqr();
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+5		inside abc
+10		inside abc
+25		inside abc
+```
+</td>
+</tr>
+</table>
+
+### OUT PARAMs
+- Write only, can only write input
+- Can pass variables only
+- Address sent across is Call by reference
+- Procedure can return value indirectly if you call by reference
+- Used on public parameter
+- Most secure between OUT & INOUT (e.g. username, password, OTP, etc)
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create procedure abc(out y int)
+begin
+	set y = 100;
+end; //
+delimiter ;
+
+delimiter //
+create procedure pqr()
+begin
+	declare x int default 10;
+	call abc(x);
+	insert into temp value(x, 'before abc');
+	call abc(x);
+	insert into temp value(x, 'after abc');
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+call pqr();
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+10		before abc
+100		after abc
+```
+</td>
+</tr>
+</table>
+
+### INOUT PARAMs
+- Read & write,
+- Can pass variables only
+- Address sent across is Call by reference
+- Procedure can return value indirectly if you call by reference
+- If you want to return value & security is not concert
+- Used on Local network
+- Most powerful & Best functionality
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create procedure abc(inout y int)
+begin
+	set y = y*y*y;
+end; //
+delimiter ;
+
+delimiter //
+create procedure pqr()
+begin
+	declare x int default 10;
+	call abc(x);
+	insert into temp value(x, 'before abc');
+	call abc(x);
+	insert into temp value(x, 'after abc');
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+call pqr();
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+10		before abc
+1000	after abc
+```
+</td>
+</tr>
+</table>
+
+D11.3 STORED OBJECTS
+
+## STORED OBJECTS
+
+- Objects that are store in database
+- e.g. CREATE ... table, indexes, views, store procedures
+- Anything that you do with CREATE command is a stored object
+
+### STORED FUNCTION
+- Routin that returns a value directly & compulsorily
+- These are global functions
+- Stored in the database
+- Can be called in MySQL Command Line Client, Workbench, Java(JDBC Drivers), MS .NET(ODBC Drivers), etc.; It can be called through any front-end software
+- Stored in database in compiled format
+- Hence execution will be very fast
+- Hiding source code from end user
+- Withing the function, all MySQL-PL statements allowed, e.g. variables, cursors, If statements, sub-blocks, loops, etc.
+- Stored procedures can call stored function & vice versa.
+- 1 function can call another function
+- Can call itself (Recursion)
+- To make it dynamic/flexible, you can pass parameters to a function
+- OVERLOADING OF STORED FUNCTION IS NOT ALLOWED, Because it's a stored object
+- you CANNOT create 2 or more functions with same name EVEN if no of parameters passed is different OR datatype of parameters is different
+- Only IN parameter is allowed
+
+- Stored functions are of 2 types
+1. Deterministic
+2. Not-Deterministic
+
+- For the same input parameters, if stored function returns the same result, it is considered as Deterministic; otherwise the stored function is Not-Deterministic
+- You have to decide whether a stored function is Deterministic or not
+- If you declared it incorrectly, the stored function may produce an unexpected result, or the available optimization is not used which degrades the performance
+
+	```mysql> call abc();```
+- Unlike a stored procedure a stored function cannot be called by itself like above, because a function returns a value and that value has to be stored somewhere. and therefore the function has to be equated with a variable, or it has to be part of some expression
+- Stored function can be called in select statement
+- Stored function can be called in insert, update, delete (in DML command) as well.
+```sql
+select abc(sal) from emp;
+update emp set sal = abc(sal);
+delete from emp where abc(sal) = 100000;
+```
+
+<table>
+<tr>
+<td>
+
+```sql
+--Syntax
+delimiter //
+create function abc()
+returns int
+deterministic
+begin
+	return 10;
+end; //
+delimiter ;
+
+delimiter //
+create procedure pqr()
+begin
+	declare x int;
+	set x = abc();
+	insert into tempp values(x, 'after abc');
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+--MySQL will Read, Compile, Plan & Store it in the DB in compiled format
+call pqr();
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+10		after abc
+```
+</td>
+</tr>
+</table>
+
+- To DROP the function
+```sql
+drop function abc;
+```
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create function abc(y int)
+returns int
+deterministic
+begin
+	return y*y;
+end; //
+delimiter ;
+
+delimiter //
+create procedure pqr()
+begin
+	declare x int;
+	set x = abc(10);
+	insert into tempp values(x, 'after abc');
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+call pqr();
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+100		after abc
+```
+</td>
+</tr>
+</table>
+
+ENAME	SAL
+KING	9000
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create function abc(y int)
+returns boolean
+deterministic
+begin
+	if y > 5000 then
+		return TRUE;
+	else
+		return FALSE;
+	end if;
+end; //
+delimiter ;
+
+delimiter //
+create procedure pqr()
+begin
+	declare x int;
+	select sal into x from emp where ename = 'KING';
+	if abc(x)
+		insert into tempp values(x, '>5000');
+	else
+		insert into tempp values(x, '<=5000');
+	end if;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+call pqr();
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+9000	>5000
+```
+</td>
+</tr>
+</table>
+
+- Function is normally used as validation routin
+- Function normally returns a boolean value TRUE or FALSE value, accordingly so future processing
+- If function returns a boolean value, then you can directly use the function name as condtion for IF statement
+- To see which all function are created
+show function status; shows all function in all databases
+show function status where db = 'cdacmumbai;
+show function state where name like 'a%';
+
+- To view source code of stored function
+show create function abc;
+
+- To share function with other users
+grant execute on function cdacmumbai.abc to scott@localhost
+- Now for scott to call function
+select cdacmumbai.abc();
+revoke execute on function cdacmumbai.abc from scott@localhost;
+
+
+- To import data from Excel Sheet/DBMS
+	- Save as .CSV
+	- Then using MySQL for Excel fwtch the data in DB
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create function abc(y int)
+returns boolean
+deterministic
+begin
+	if y > 5000 then
+		return TRUE;
+	else
+		return FALSE;
+	end if;
+end; //
+delimiter ;
+
+delimiter //
+create procedure pqr()
+begin
+	declare x int;
+	select sal into x from emp where ename = 'king';
+	if abc(x)
+		insert into tempp values(x, '>5000');
+	else
+		insert into tempp values(x, '<=5000');
+	end if;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+call pqr();
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+9000	>5000
+```
+</td>
+</tr>
+</table>
+
+# D12
+
+D12.1 Triggers
+
+## STORED OBJECTS
+- Objects that are stored in database
+- CREATE ... tables, indexes, views, stored procedure/function
+- Anything that you do with CREATE command is stored object
+
+### TRIGGERS
+```
+EMP							DEPTOT	
+ENAME	 SAL	DEPTNO		DEPTNO	SALTOT
+ A		5000	  1		 	 1		 15000
+ B		5000	  1		 	 2		  6000
+ C		5000	  1		
+ D		3000	  2		
+ E		3000	  2	
+ ```
+
+ ```sql
+ select deptno, sum(sal) from emp
+ group by deptno;
+ ```
+ 
+ - Triggers are present in some of RDBMSs
+ - It's a routin (set of commands) that gets executed AUTOMATICALLY, whenever some event takes place
+ - Triggers are written on tables
+ - Events are
+	- Before Insert, After Insert
+	- Before Delete, After Delete
+	- Before Update, After Update
+- Max 30 character for trigger name
+- Withing the trigger, all MySQL-PL statements are allowed, e.g. variable, cursors, if statement, loops, sub-blocks, etc.
+- Whether you rollback or commit AFTERWARDS, the data will always be consistent
+- Rollback & Commit not allowed inside the trigger
+- Rollback & Commit has to be specified afterwards, at the end of transaction
+- Whether you rollback or commit afterwards, the data will always be consistent
+- In MySQL, all triggers are at row level (will fire once for each row)
+- You can have maximum 6 triggers per table
+- If you share table with other users, indexes & triggers will shared & executed automatically
+- You can call stored procedures & functions inside the trigger
+
+ - USES
+	- Maintain logs (audit trails) of insertion (After insert trigger is recommended) or deletion (After delete trigger is recommended) or updation (After delete trigger is recommended)
+	- Automatic data duplication/replication/data_mirroring, maintain multiple copies of table in trigger event
+	- To maintain shadow tables in trigger event
+	- Maintain standby database in the event of insert
+	- Data cleansing BEFORE INSERT
+	- Dynamic default values BEFORE INSERT
+	- Auto-updation of related tables
+	- Maintain history tables in event of delete
+	- ON DELETE CASCADE before delete
+	- In the above, set child rows to null, BEFORE DELETE
+	- Auto-updation of related tables
+	- All the triggers are at server levels
+		- You can perform DML operations using MySQL Command line client, MySQL Workbench, Java, MS .Net, etc. or any front-end s/w, the trigger will execute.
+	- Maintain shadow & history tables in event of update
+
+#### **NOTE: *MOST OF BELOW PROGRAMS NEED TO UPDATE TO GET THE OUTPUT, SO OUTPUT ARE NOT RELATIVE TO PRGRAMS***	
+ 
+#### INSERT
+- If INSERT operation on table fails, then it'll cause event to fail & trigger changes are automatically rolled back
+- If TRIGGER fails, it'll cause event to fail & insert operation on table  is automatically rolled back
+- You data will always be consistent
+- Can use NEW object, where NEW is holding inserting values
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger abc
+before insert
+on emp for each row
+begin
+	insert into tempp values(1, 'inserted', user(), sysdate(), now());
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+--MySQL will READ->COMPILE->PLAN->STORE it in DB in COMPILED FORMAT
+insert into emp values('F', 3000, 2);
+--Above insert statement will trigger TRIGGER abc
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+1		'inserted'
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger abc
+before insert
+on emp for each row
+begin
+	insert into tempp values(new.sal, new.ename);
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+--new.ename, new.sal, new.sal, new.deptno are MySQL created variables
+insert into emp values('F', 3000, 2);
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+3000	F
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger abc
+before insert
+on emp for each row
+begin
+	set new.ename = upper(new.ename);
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+--MySQL will READ->COMPILE->PLAN->STORE it in DB in COMPILED FORMAT
+insert into emp values('f', 3000, 2);
+--Above insert statement will trigger TRIGGER abc
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+1		'inserted'
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger abc
+before insert
+on emp for each row
+begin
+	if new.deptno = 1 then
+		set new.sal = 5000;
+	elseif new.deptno = 2 then
+		set new.sal = 3000;
+	else
+		set new.sal = 2500;
+	end if;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+insert into emp values('F', 3000, 2);
+--Above insert statement will trigger TRIGGER abc
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+1		'inserted'
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger abc
+before insert
+on emp for each row
+begin
+	update deptot set saltot = saltot + new.sal
+	where deptno = new.deptno;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+insert into emp values('F', 3000, 2);
+--Above insert statement will trigger TRIGGER abc
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+1		'inserted'
+```
+</td>
+</tr>
+</table>
+
+```sql
+show triggers; --shows trigger of all schemas
+show triggers from [db_name];
+drop trigger triggerName;
+--if you drop the table, then the indexes & triggers are droped automatically
+select * from information_schema.triggers
+where trigger_schema = 'dbName'
+-To
+```
+
+#### DELETE
+- ON DELETE CASCADE is recommended to use in trigger instade of on table
+- Can use OLD object, where old holding deleting values
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger pqr
+before delete
+on emp for each row
+begin
+	insert into tempp values(1, 'deleted');
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+--Above delete statement will trigger TRIGGER pqr
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+1		'deleted'
+1		'deleted'
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger pqr
+before delete
+on emp for each row
+begin
+	insert into tempp values(old.sal, old.ename);
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+delete from emp where deptno = 2;
+--Above insert statement will trigger TRIGGER abc
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+3000	'D'
+3000	'E'
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger pqr
+before delete
+on emp for each row
+begin
+	update deptot set saltot = saltot - old.sal
+	where deptno = old. deptno;
+	/* if user() = 'paresh' then
+		delete from emp where deptno = old.deptno;
+	end if; */
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+delete from emp where deptno = 2;
+--Above delete statement will trigger TRIGGER abc
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+3000	'D'
+3000	'E'
+```
+</td>
+</tr>
+</table>
+
+#### UPDATE
+- Can use new & old both the objects, where new is holding updating values and old holding replacing values
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger xyz
+before update
+on emp for each row
+begin
+	insert into tempp values(1, 'updated');
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+update emp set sal = 6000
+where deptno = 1;
+--Above update statement will trigger TRIGGER abc
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+1		'updated'
+1		'updated'
+1		'updated'
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger xyz
+before update
+on emp for each row
+begin
+	insert into tempp values(old.sal, old.ename);
+	insert into tempp values(new.sal, new.ename);
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+update emp where deptno = 1;
+--Above update statement will trigger TRIGGER abc
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+5000	'A'
+6000	'A'
+5000	'B'
+6000	'B'
+5000	'C'
+6000	'C'
+```
+</td>
+</tr>
+</table>
+
+- Cascading triggers -> one trigger causes second trigger to execute, ehich in turn cuases third trigger to execute, and so on..
+- When all cascading triggers are firing, any kind of power failure, network failure, etc.; the entire transaction is automatically rolled back.
+- What is meant by Mutating tables -> It is an error, if some cascading trigger one of previous trigger to execute, then it will not go into infinite loop; you will get an error that table is going under mutation & the entire transaction is automatically rolled back
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger xyz
+before update
+on emp for each row
+begin
+	update deptot set saltot = saltot - old.sal + new.sal
+	where deptno = old.deptno;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+update emp set sal = 6000
+where ename = 'A';
+--Above update statement will trigger TRIGGER abc
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger xyz
+before update
+on emp for each row
+begin
+	if old.sal <> new.sal then
+		update deptot set saltot = saltot - old.sal + new.sal
+		where deptno = old.deptno;
+	end if;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+update emp set ename = 'Amit'
+where ename = 'A';
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+
+```
+</td>
+</tr>
+</table>
+
+
+<table>
+<tr>
+<td>
+
+```sql
+delimiter //
+create trigger xyz
+before update
+on emp for each row
+begin
+	if old.sal <> new.sal or old.deptno <> new.deptno then
+		if old.deptno <> new.deptno then
+			update deptot set saltot = saltot - old.sal
+			where deptno = old.deptno
+			update deptot set saltot = saltot + new.sal
+			where deptno = new.deptno
+		else
+			--if you are updating the sal column only
+			update deptot set saltot = saltot - old.sal + new.sal
+			where deptno = old.deptno;
+		end if;
+	end if;
+end; //
+delimiter ;
+```
+</td>
+<td>
+
+```sql
+update emp set deptno = 2
+where ename = 'A';
+select * from tempp;
+commit;
+OUTPUT
+FIR		SEC
+
+```
+</td>
+</tr>
+</table>
+
+12.2 Normalization
+
+## NORMALIZATION
+
+- Applicable for RDBMS(e.g. MySQL) & ORDMS (e.g. Oracle)
+- Concept of table design
+- RDBMS -> 1st to 4th Normal Form
+- ORDBMS -> 1st to 9th Normal Form
+- What tables to create, structures, columns, datatypes, widths, constraints
+- Based on User Requirements
+- It's part of Design phase (min 1/6)
+- aim of Normalization is to have "efficient" table structure
+- Aim of Normalization is to avoid the data redundancy (avoid the unnecessary duplication of data)
+- Secondary aim of Normalization is to reduce the problems of insert, update, & delete
+- Normalization is done from input perspective
+- Normalization is done from forms perspective
+- VIEW THE ENTIRE APPLICATION ON A PER-TRANCACTION BASIS, & YOU NORMALISE EACH TRANSACTION SEPARATELY
+- e.g. CUSTOMER_PLACE_AN_ORDER, CUSTOMER_CANCELS_THE_ORDER, GOODS_ARE_DELIVERED, CUSTOMER_MAKES_PAYMENT, CUSTOMER_RETURNS_THE_GOODS, etc.
+- Primary key is by-product of Normalisation
+
+### GETTING READY FOR NORMALISATION
+- CUSTOMER_PLACE_AN_ORDER
+1. For a given transactions, make a list of fields
+2. Ask the client for some sample data
+3. With the permission & involment of client, strive for atomicity
+	- Column is divided into sub-columns, and sub-columns are divided into sub-sub_columns, e.g. address can be divided into flat no, street, landmark, etc.
+4. For every column, make list of column properties
+	- e.g. pincode should be numeric, no decimal, positive, 6 digits, fixed length, mandatory, etc
+	- e.g. address should be alpha numeric, max 100 char, var length, etc
+	- e.g. date, datetime, format
+5. Get client sign-off
+6. End of client interaction/involment
+7. Assign datatype to each column
+	- e.g. Cmobno - unsigned int
+8. Assign the width for each Column
+	- varchar(100)
+9. Assign the not null, unique and check constraints (team activity)
+10. For all practical purposes, you can have a single table with al these columns
+11. Remove the computed columns (e.g. itemtotal, ototal)
+	- e.g. select qty*rate from ....;
+	- e.g. select sum(qty*rate) from ....;
+12. Key element will be primary key of this table
+
+- At this point, data is in Un-Normalised Form (UNF) 
+- Un-Normalised Form -> Starting point of normalisation
+
+### NORMALISATION
+
+1. Remove repeating group into a new table
+2. Key element will be primary key of new table
+3. (This step may/maynot be required) Add the primary key of the original table to new table to give you composite primary key
+- Above 3 steps are to be repeated infinitely till you cannot normalise any further   
+- FIRST NORMAL FORM (FNF) (Signle Normal Form)(1NF)  
+- Repeating groups are removed from designed   
+- 1 : Many relationship is always encounterd here
+- DEPT & EMP tables are in First Normal Form   
+25%
+
+4. Only the tables with composite primary key are examined
+5. Those non-key elements that are not dependent on entire composite primary key, they are to be removed into a new table
+6. Key element on which originally dependant, it is to be added to new table, & it''ll be the primary kay of new table
+- Above 3 steps are to be repeated infinitely till you cannot normalise any further
+- SECOND NORMAL FORM (SNF) (Double Noraml Form) (2NF)
+- Every column is functionally dependent on Primary key
+- Functional dependancy -> Without primary key, that column cannot function   
+25% + 67% -> 92%
+
+7. Only the non-key elements are examined for inter-dependancies
+8. The inter-dependant column are to be removed to be removed into a new table
+9. The key element will be the primary key of the new table, & the primary key of new table, that column, it is to be retained in the original table for relationship purposes
+- Above 3 steps are to be repeated infinitely till you cannot normalise any further
+- THIRD NORMAL FORM (TNF) (Triple Noraml Form)(3NF)
+- Transitive dependancies (inter-dependancies) are removed from table design
+
+
+### POST - NORMALISATION
+1. Implement extention column
+2. Reserve some columns for logs of DML operations
+
+
+# D13
+
+D13.1 Normalisation
+
+## NORMALISATION
+
+- Implement extension columns
+- Reserver
+
+### 4TH NORAL FORM
+- Extension to 3rd normal form
+- Also known as BCNF (Boyce-Codd Normal Forma)
+- Introduced sometime in the mid 1990's
+- You may or may not implement 4th nornal form
+- Used to maintain the integrity of data
+- normally used on public network, e.g. internet
+
+- If the data is large, if the select statement, you add an extra to the column to the table, and store the totals over there
+- Normally done for computed columns, expressions, function-based columns, summery columns, formula columns, etc. e.g. itemtotal, ototal.
+- This is DENORMALISE
+- used to improve the performance, to make SELECT statement work faster
+- In some situations you may want to add extra table to the application. e.g.,
+```
+	DEPTOTO
+--------------
+DEPTNO	SALTOT
+------	------
+  1		 15000
+  2		  6000
+```
+
+- Disadvantage of DENORMALISE
+	1. DML will be slow
+	2. Data redundancy
+- Advantage of DENORMALISE
+	1. SELECT statement will be fast
+
+![Normalisation](/DBT/D13/Normalisation%202.0.png)
+
+D13.2 NoSQL
+
+## NoSQL
+- New technology
+- Not Only SQL (SQL is not the only language for database problems)(Other query language exist)
+
+#### History
+- Earlier we had DBMS
+- Mid 1980's Rise of RDBMS
+##### Benifits of RDBMS
+1. SQL (Common for all RDBMS)(All RDBMS can communicate with each other)
+2. Data persistence (RDBMS maintains Read & Write consistency)
+Complex transactions
+4. Excellent reporting tools available, e.g. Oracle, reports, Oracle Graphics, Acuate, Seagate's Crystal Reports, etc
+5. Integration mechanism across application
+
+##### Problems with RDBMS model
+ Impedance Mismatch -> One logical group of fields in the memory is splattered accross multiple tables in the database
+
+##### Soluntion
+- Mid 1990's Rise of Object databases, e.g. Oracle, etc.
+- Development in the world
+	- In early 2000's Rise of Internet
+	- Vertical Scaling - Upgrading server by EXPANDING hardware
+##### Problem with Scaling vertically
+1. Very exprensive
+2. Very difficult to implement
+3. Hardware has a limit
+
+##### Solution
+- Scaling Horizontally - Upgrading server by EXTENDING hardware
+- Lots little boxes sharing the load
+- Grid of servers
+
+##### Problem with Scaling horizontally
+- SQL is not designed to work well with a multi-node system
+
+##### Solution
+- Grid computing & Cloud computing
+- HAAS - Hardware As A Service
+- PAAS Platform 
+- SAAS - Software 
+- IAAS - Infrastructure
+e.g. Oracle 23.1
+Google -> BigTable
+Amazon -> Dynamo
+
+##### **Birth of NoSQL**
+- Johan Oskarsson (Pronoucation - Yohan) (from Hadoop, based London)
+- Twitter hashtag - #NoSQL,
+- Thursday, 11th June, 2009
+- 10 AM to 5 PM
+- San Francisco
+- Antendees:-
+	- MongoDB - Mangoos DB
+	- CouchDB
+	- Project Voldemort - A distributed database
+	- Hypertable
+	- Dynomite
+	- Cassandra (Egiptian word, eye of a women)
+	- Apache HBASE
+	- etc....
+
+
+### Definition of NoSQL
+- No definition of NoSQL
+
+### Characteristics of NoSQL
+1. Open-source
+2. Non-relational
+3. Cluster-friendly (ability to run on large clusters)(horizontal scalibility)
+4. Designed for 21st Century Web (high trafic websites)
+5. Schema-less
+
+### Data Models
+1. Document database
+	- Store documents, e.g. MongoDB, CouchDB, Raven DB
+2. Column family database
+	- Every column is file, e.g. Cassandra, Apache HBASE
+3. Graph database
+	- Store graphs, maps, e.g. Neo4j - NoSQL for the Enterprise
+4. Key-value database
+	- Based on hashing algorithm
+	- From the value of the fields it will generate the HD address
+	- Designed for fast retrievel
+	- Free HD space has to be allocated in advance
+	- Used for historical data; for data warehousing applications
+	- e.g. Project Voldemort - A distributed database, riak, redis
+
+### NoSQL
+- What is NoSQL
+	- It is a type of database management system
+
+- What are vrious database management system
+	1. RDBMS
+	2. OLAP (Online Analytical Processing)
+	3. NoSQL
+
+ - What are objective of NoSQL
+	- Focused to provide
+	1. Scalability
+	2. Performance
+	3. High Availability
+
+
+<table>
+<tr>
+<td>
+
+```
+RDBMS
+1. More functionality
+2. Less performance
+3. Tables
+4. Stuctured data
+```
+</td>
+<td>
+
+```
+NoSQL
+1. Less functionality
+2. More performance
+3. Collections
+4. Structured & Unstructured data
+```
+</td>
+</tr>
+</table>
+
+- What is missing in NoSQL
+	1. No joins support
+	2. No complex transactions support
+	3. No constraints support
+
+- What is available in NoSQL
+	1. Query language (Other than SQL) ("Not only SQL")
+	2. Fast performance
+	3. Horizontal scalability
+
+- When to use NoSQL
+	1. The ability to store & retrieve great quantities of data is important
+	2. Storing the relationship between the elements in not important
+	3. Dealing with growing lists of elements, e.g. Twitter postes, Internet server logs, Blogs.
+	4. Data is not structured or structure is changing with time
+	5. Prototypes or fast applications need to be developed
+	6. Constraints and validations logic is not required to be implemented in the database
+	
+- When not to use NoSQL
+	1. Complex transactions need to be handles
+	2. Joins must be handles ny the databases
+	3. Validations must be handled by the databases
+
+Most companies using RDBMS as well as NoSQL, some data like payment, etc SQL, other in MongoDB
+
+## MongoDB
+- Sponsored by 10gen
+- JSON-style documents representd as BSON (Binory JSON)
+```JSON
+{"hello":"world"} -> \x16\x00\x00\x00\x02hello\x00\x06\x00\x00\x00world\x00\x00
+```
+
+JavaScript Object Notation
+json.org/bsponspec.org
+
+- Felxible "schemas"
+```JSON
+{"ename":"Scott","job":"CLERK"}
+{"ename":"King","city":"Mumbai","job":"MANAGER","emailid":["..",".."]}
+```
+
+- _id field
+- every document has a _id field
+- Equivalent to Primary key of RDBMS
+```
+ObjectID(4bface1a223136e04fec434")
+	timestamp
+			machine id
+					process id
+							counter
+```
+- _id is lightweigth occupying 12 bytes of storage
+- Generated on client end to reduce load on database server
+- Many supported platforms/languages
+- Driver for PHP, Perl, C++, C#, .Net, Python, Ruby
+- Available on all major OS 32/64 bit
+- MongoDB v2.7 is the last version to support 32 bit OS
+- v3.2 onwards only 64 bit OS is supported
+
+Download MongoDB
+https://www.mongodb.org
+https://www.mongodb.com
+
+Install v3.2
+Startup, Shutdown & Connect DB
+
+
+### MySQL vs MongoDB
+<table>
+<tr>
+<td>
+
+```
+MySQL
+
+Large databases
+Tables
+Rows
+
+
+
+```
+</td>
+<td>
+
+```
+MongoDB
+
+Large databases
+Collections
+Documents
+4MB limit on document size
+Document within document supported
+No milit on nesting depths of doc withing doc
+```
+</td>
+</tr>
+</table>
+
+
+
+### Steps to install MongoDB
+- Run MongoDB setup
+- Next -> Accept & Next -> Setup type Complete -> Install
+- UAC -> Yes (Allow)
+- Finish
+### Post-Install Steps
+- MongoDB gets installed in C:\Program Files\MongoDB
+- Go to C:\Program Files\MongoDB\Server\3.2\bin
+- mongod.exe - To start DB
+- mongo.exe - To start MongoDB Command Line
+- MongoDB requires a data directory to store all the data
+- Create folder-> C:\MongoDB\Data
+- Add C:\Program Files\MongoDB\Server\3.2\bin to path variable of windows (environmental variables)
+- To start the database 
+	- Go to CMD,
+	- Go to C:\Program Files\MongoDB\Server\3.2\bin folder
+	- \bin> mongod --dbpath C:\MongoDB\Data
+	- If your path includes spaces, enclose path in double quotes
+	- Waiting for connection on port 27017  
+	Do not close this window
+
+- To connect to MongoDB
+	- Open another CMD
+	- Go to C:\Program Files\MongoDB\Server\3.2\bin folder
+	-\bin> mongo
+	- It says connecting to test
+
+### MongoDB Commands
+	
+- These are case sensative
+- ENTER key is end of command
+- Give "help" command
+	- Will show mongodb commands
+	
+- To show databases
+	`show dbs`
+
+- To create a new database
+	`use cdac`
+	- If cdac db exists, it'll connect to it, otherwise it'll create and connect to it
+	
+- To see currently selected DB
+	`db`
+
+- We created cdac batabase, it says connected to db, but it doesn't show in list.
+- You should have at least on collection in it
+
+- To see Collections
+`show collections;`
+
+- To drop database
+`db.dropDatabase()
+	- this will drop the selected db. If you have not selected any db, then it will drop 'test' database
+
+- To create collection
+`db.createCollection("library")
+
+- To drop collection
+`db.collection_name.drop()` | `db.library.drop()`
+
+- To insert a document in library collection
+```shell
+db.collection_name.insert(document)
+db.library.insert({title:'MongoDB programming', author:'Sameer',likes:100})
+```
+
+- To view the data, we have to use find method
+```shell
+db.collection_name.find()
+db.library.find()
+```
+	- Observer the _id field (equivalent to Primary key)
+
+- To insert another document
+```shell
+db.library.insert({title:'MySQL programming', authors:['Jack','Jill'], likes:200,qty:20,price:11})
+```
+
+- To make it more presentable, we have pretty method
+`db.library.find().pretty()`
+
+- We have findOne() method, returns 1st document
+`db.library.findOne()
+
+- To update document
+```shell
+db.collection_name.update(selection_criteria, updated_data)
+db.library.update({author:'Sameer'},{$set:{author:'Sameer Dehadrai'}})
+```
+- Use prettu() method to view it
+`db.library.find().pretty()`
+
+- Delete document
+```shell
+db.collection_name.remove(deletion_criteria)
+```
+Let us delete the document that has 100 like
+```shell
+db.library.remove({like:100})
+```
+
+- To exit from MongoDB shell
+`exit`
+
+### To SHUT DOWN MongoDB Database
+- Exit MongoDB shell
+- Press ctrl+C in terminal where mongod instance is running
+
+
+# Extra
+
+- Matillion
+- Attunity
