@@ -1,0 +1,102 @@
+1.
+create table flats(
+flatid int primary key auto_increment,
+flatnumber varchar(10),
+block varchar(10)
+);
+
+create table residents(
+residentid int primary key auto_increment,
+fullname varchar(100),
+flatid int,
+foreign key(flatid) references flats(flatid) --Defined foreign key relationship here
+);
+
+create table maintenance(
+maintenanceid int primary key auto_increment,
+flatid int,
+ammount decimal(8,2),
+foreign key(flatid) references flats(flatid) --Defined foreign key relationship here
+);
+
+insert into flats(flatnumber, block) values
+('f001', 'A'),
+('f002', 'B'),
+('f003', 'C'),
+('f004', 'A'),
+('f005', 'B'),
+('f006', 'C');
+
+insert into residents (fullname, flatid) values
+('Paresh', 1),
+('Ritesh', 2),
+('Naresh', 3),
+('Suresh', 4),
+('Ramesh', 5),
+('Ganesh', 6),
+('Sahara', 6);
+
+insert into maintenance(flatid, ammount) values
+(1, 1500.00),
+(2, 2500.00),
+(3, 1000.00),
+(4, 1750.00),
+(5, 00.00),
+(6, 3500.00);
+
+2.
+FOREIGN KEYS are defined on line 12 & 19
+
+3.
+select residents.fullname, flats.block, maintenance.ammount from flats, maintenance, residents
+where flats.flatid = residents.flatid and residents.flatid = maintenance.flatid and  (flats.block = 'A' or maintenance.ammount > 2000);
+
+4.
+select * from maintenance limit 5;
+
+SECTION B
+1.
+select distinct flats.block, sum(maintenance.ammount) from flats, maintenance
+where flats.flatid = maintenance.flatid
+group by flats.block;
+
+2.
+select flats.flatnumber, maintenance.ammount from flats, maintenance
+where flats.flatid = maintenance.flatid and
+			maintenance.ammount = (
+				select max(ammount) from maintenance);
+
+3.
+create view maintenancesummary as
+select flats.flatnumber, maintenance.ammount from flats, maintenance
+where flats.flatid = maintenance.flatid;
+update maintenancesummary
+set ammount = 2200
+where flatnumber = 'f005';
+
+4.
+select * from flats, maintenance
+where + flats.flatid = maintenance.flatid;
+
+5.
+create table tempTable as
+select residents.fullname, flats.block from flats, residents
+where flats.flatid = residents.flatid and flats.block = 'A';
+drop table tempTable;
+
+6.
+create table tempTable2(
+flatnumber char(10),
+totalmaintenance int
+);
+delimiter //
+create procedure getflatinfo()
+begin
+	select distinct flats.block, sum(maintenance.ammount) as totalmaintenance  from flats, maintenance
+	where flats.flatid = maintenance.flatid
+	group by flats.block;
+end; //
+delimiter ;
+
+call getflatinfo();
+
